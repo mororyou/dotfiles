@@ -1,0 +1,43 @@
+{
+  "skill_name": "artifact-copy",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "このアーティファクトを Obsidian に保存しておいて。HTML は fixtures/single/artifact.html にある。元のアーティファクトは https://claude.ai/artifact/TC100?sk=abc123secret です。",
+      "expected_output": "AI/Artifacts に 1 件の HTML が保存される。<title> の標語ではなく内容を表す名詞句がファイル名になる。出所コメントが埋め込まれ、共有トークンは除去される。",
+      "files": ["fixtures/single/artifact.html"],
+      "assertions": [
+        "AI/Artifacts 配下に HTML が 1 件保存されている",
+        "ファイル名が <title> の標語そのままになっていない",
+        "ファイル名が内容を表す名詞句になっている",
+        "出所コメントが埋め込まれている",
+        "元 HTML の本文が保持されている"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "作ったダッシュボードのアーティファクト、Knowledge に残しておきたい。fixtures/multi/ に index.html、style.css、app.js がある。index.html は style.css を同階層、app.js を assets/app.js として参照している。",
+      "expected_output": "AI/Artifacts/<名前>/ 配下に 3 ファイルが公開時の相対パスを保って保存され、index.html の相対参照が解決する。",
+      "files": ["fixtures/multi/index.html", "fixtures/multi/style.css", "fixtures/multi/app.js"],
+      "assertions": [
+        "index.html が保存されている",
+        "style.css が index.html と同じ階層に保存されている",
+        "app.js が保存されている",
+        "3 ファイルが 1 つのフォルダにまとまっている",
+        "index.html の相対参照が保存後も解決する"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Terraform のガイドのアーティファクトを更新したので、Obsidian の保存を差し替えておいて。更新版は fixtures/update/artifact-v2.html。元のアーティファクトは https://claude.ai/artifact/TF001 です。",
+      "expected_output": "ユーザーが付け直した既存ファイル名を維持したまま中身だけ更新される。連番ファイルもタイトル由来の新規ファイルも作られない。",
+      "files": ["fixtures/update/artifact-v2.html"],
+      "assertions": [
+        "AI/Artifacts 直下の HTML が 1 件のまま (連番が増えていない)",
+        "既存のユーザー命名が維持されている",
+        "更新分の内容が反映されている",
+        "タイトル由来の新規ファイルが作成されていない"
+      ]
+    }
+  ]
+}

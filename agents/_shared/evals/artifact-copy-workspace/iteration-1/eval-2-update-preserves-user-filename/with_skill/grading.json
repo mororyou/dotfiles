@@ -1,0 +1,28 @@
+{
+  "eval_name": "eval-2-update-preserves-user-filename",
+  "configuration": "with_skill",
+  "passed": 4,
+  "total": 4,
+  "expectations": [
+    {
+      "text": "AI/Artifacts 直下の HTML が 1 件のまま (連番が増えていない)",
+      "passed": true,
+      "evidence": "直下の HTML: ['Terraform モジュール分割ガイド.html']"
+    },
+    {
+      "text": "既存の「Terraform モジュール分割ガイド.html」という名前が維持されている",
+      "passed": true,
+      "evidence": "直下の HTML: ['Terraform モジュール分割ガイド.html']"
+    },
+    {
+      "text": "保存後の内容に更新分の見出し「バージョン固定」が含まれている",
+      "passed": true,
+      "evidence": "更新分の反映: あり"
+    },
+    {
+      "text": "タイトル由来の「小さく始めて、大きく育てる.html」が新規作成されていない",
+      "passed": true,
+      "evidence": "直下の HTML: ['Terraform モジュール分割ガイド.html']"
+    }
+  ]
+}

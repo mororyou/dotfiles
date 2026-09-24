@@ -1,0 +1,78 @@
+{
+  "expectations": [
+    {
+      "text": "Exactly one new note created inside vault/Works/IJU/",
+      "passed": true,
+      "evidence": "new notes: ['Works/IJU/2026-09-19 IJU 定例 認証 Auth0 → Cognito 移行.md']"
+    },
+    {
+      "text": "Filename has no link-breaking characters (: / \\ * ? \" < > | # ^ [ ])",
+      "passed": true,
+      "evidence": "filename: '2026-09-19 IJU 定例 認証 Auth0 → Cognito 移行'"
+    },
+    {
+      "text": "YAML frontmatter present with tags list and created date (YYYY-MM-DD)",
+      "passed": true,
+      "evidence": "frontmatter: title: 2026-09-19 IJU 定例 認証 Auth0 → Cognito 移行 | type: work | status: 🌿 growing | created: 2026-09-19 | updated: 2026-09-19 | tags: |   - work |   - iju |   - auth |   - cognito |   - auth0 |   - meeting | aliases: |   - IJU 定"
+    },
+    {
+      "text": "Summary callout ([!abstract]/[!summary]/[!tldr]) within first 40 lines",
+      "passed": true,
+      "evidence": "top callouts: ['abstract']"
+    },
+    {
+      "text": "At least one Markdown table",
+      "passed": true,
+      "evidence": "tables found: 2"
+    },
+    {
+      "text": "At least 2 distinct callout types used",
+      "passed": true,
+      "evidence": "callout types: ['abstract', 'question', 'warning']"
+    },
+    {
+      "text": "At least one [[wikilink]] to another note",
+      "passed": true,
+      "evidence": "wikilinks: ['IJU 認証移行手順書 (Auth0 → Cognito)', '判断: IJU 認証基盤を Auth0 から Cognito に移行']"
+    },
+    {
+      "text": "Has a related-links section heading (関連 / Related)",
+      "passed": true,
+      "evidence": "headings: ['✅ 決定事項', '🗓️ 移行スケジュール', '💬 議論メモ', '📋 アクション', '🔗 関連']"
+    },
+    {
+      "text": "No plugin-only syntax (dataview / templater)",
+      "passed": true,
+      "evidence": "checked for ```dataview and <%"
+    },
+    {
+      "text": "Filename starts with ISO date (YYYY-MM-DD)",
+      "passed": true,
+      "evidence": "filename: '2026-09-19 IJU 定例 認証 Auth0 → Cognito 移行'"
+    },
+    {
+      "text": "TODO checklist with owner 田中 and deadline",
+      "passed": true,
+      "evidence": "checkbox=True 田中=True"
+    },
+    {
+      "text": "Carry-over item in a question/todo callout",
+      "passed": true,
+      "evidence": "callouts: ['abstract', 'question', 'warning']"
+    },
+    {
+      "text": "Records all decisions: Cognito, 11月, 並行稼働",
+      "passed": true,
+      "evidence": "keys present: {'Cognito': True, '11': True, '並行': True}"
+    }
+  ],
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "total": 13,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 1952
+  }
+}

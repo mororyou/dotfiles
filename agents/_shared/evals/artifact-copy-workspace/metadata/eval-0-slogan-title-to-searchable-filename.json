@@ -1,0 +1,12 @@
+{
+  "eval_id": 0,
+  "eval_name": "slogan-title-to-searchable-filename",
+  "prompt": "標語的な <title> を持つ単一ファイルのアーティファクトを保存させ、検索しやすい名詞句のファイル名が選ばれるかを見る",
+  "assertions": [
+    "AI/Artifacts 配下に HTML が 1 件保存されている",
+    "ファイル名が <title> の標語「小さく始めて、大きく育てる」そのままになっていない",
+    "ファイル名が内容 (Terraform のモジュール分割) を表す名詞句になっている",
+    "出所コメント <!-- claude-artifact ... --> が埋め込まれている",
+    "元 HTML の本文 (tfstate の見出しなど) が保持されている"
+  ]
+}

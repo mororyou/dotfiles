@@ -1,0 +1,72 @@
+{
+  "skill_name": "artifact-copy",
+  "iteration": 1,
+  "caveat": "without_skill アームは汚染されており比較に使えない。詳細は workspace の README.md を参照。",
+  "configurations": {
+    "with_skill": {
+      "pass_rate": 100.0,
+      "passed": 14,
+      "total": 14,
+      "seconds_mean": 82.3,
+      "seconds_stddev": 8.4,
+      "tokens_mean": 45342,
+      "tokens_stddev": 2430
+    },
+    "without_skill": {
+      "pass_rate": 100.0,
+      "passed": 14,
+      "total": 14,
+      "seconds_mean": 107.0,
+      "seconds_stddev": 18.1,
+      "tokens_mean": 43968,
+      "tokens_stddev": 1708
+    }
+  },
+  "per_eval": [
+    {
+      "eval": "eval-0-slogan-title-to-searchable-filename",
+      "with_skill": {
+        "passed": 5,
+        "total": 5,
+        "seconds": 70.5,
+        "tokens": 41940
+      },
+      "without_skill": {
+        "passed": 5,
+        "total": 5,
+        "seconds": 130.3,
+        "tokens": 44477
+      }
+    },
+    {
+      "eval": "eval-1-multi-file-artifact",
+      "with_skill": {
+        "passed": 5,
+        "total": 5,
+        "seconds": 87.9,
+        "tokens": 47468
+      },
+      "without_skill": {
+        "passed": 5,
+        "total": 5,
+        "seconds": 104.5,
+        "tokens": 41669
+      }
+    },
+    {
+      "eval": "eval-2-update-preserves-user-filename",
+      "with_skill": {
+        "passed": 4,
+        "total": 4,
+        "seconds": 88.6,
+        "tokens": 46617
+      },
+      "without_skill": {
+        "passed": 4,
+        "total": 4,
+        "seconds": 86.3,
+        "tokens": 45759
+      }
+    }
+  ]
+}

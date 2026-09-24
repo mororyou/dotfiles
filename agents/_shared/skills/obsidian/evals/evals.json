@@ -1,0 +1,67 @@
+{
+  "skill_name": "obsidian",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "React Server Components と Client Components の使い分けについて、境界の置き方・データ取得・'use client' の判断基準・よくある誤解をまとめたノートを Obsidian に作って。作成先は Engineering/Frontend で。ボルトは {VAULT} にある（普段の Knowledge ボルトのコピー）。",
+      "expected_output": "{VAULT}/Engineering/Frontend/ 配下に frontmatter 付きの Markdown ノートが 1 つ作られる。冒頭に要約コールアウト、比較表、判断フローの Mermaid 図、注意点コールアウト、関連リンクを含む。",
+      "files": [],
+      "assertions": [
+        "Exactly one new note created inside the expected folder",
+        "Filename has no link-breaking characters",
+        "YAML frontmatter with tags list and created date",
+        "Summary callout within first 40 lines",
+        "At least one Markdown table",
+        "At least 2 distinct callout types",
+        "At least one [[wikilink]]",
+        "Related-links section heading",
+        "No plugin-only syntax",
+        "Contains a Mermaid diagram",
+        "Mentions 'use client'",
+        "Warning/caution callout for pitfalls"
+      ]
+    },
+    {
+      "id": 1,
+      "prompt": "『達人プログラマー』を読み終えたので読書メモを Obsidian に残して。刺さったのは DRY 原則、直交性、曳光弾（tracer bullets）、割れ窓理論、契約による設計あたり。評価は 5 段階で 5。ボルトは {VAULT} にある（普段の Knowledge ボルトのコピー）。",
+      "expected_output": "{VAULT}/Books/ 配下に読書メモが作られる（作成先は指示していないので内容から Books を選ぶ）。書誌情報の表、学びのセクション、行動に変えるチェックリスト、frontmatter に type/tags/source/評価が入る。",
+      "files": [],
+      "assertions": [
+        "Exactly one new note created inside the expected folder",
+        "Filename has no link-breaking characters",
+        "YAML frontmatter with tags list and created date",
+        "Summary callout within first 40 lines",
+        "At least one Markdown table",
+        "At least 2 distinct callout types",
+        "At least one [[wikilink]]",
+        "Related-links section heading",
+        "No plugin-only syntax",
+        "Covers all 5 concepts",
+        "Rating 5/5 recorded",
+        "Action checklist (- [ ])",
+        "Frontmatter type book / book tag"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "IJU プロジェクトの今日の定例の議事録を Obsidian にメモして。決まったこと: 認証は Auth0 から Cognito に移行する（コスト理由）、移行期限は 11 月末、移行中は両方並行稼働。TODO: 田中さんが Cognito の PoC を来週まで、自分が移行手順書のドラフトを金曜まで。持ち越し: 既存ユーザーのパスワード移行方法（Cognito はハッシュ持ち込み不可）。ボルトは {VAULT} にある（普段の Knowledge ボルトのコピー）。",
+      "expected_output": "{VAULT}/Works/IJU/ 配下に日付付きファイル名（例: 2026-09-19 IJU 定例）の会議メモが作られる。結論コールアウト、決定事項、担当者・期限付きの TODO チェックリスト、持ち越し事項のコールアウトを含む。",
+      "files": [],
+      "assertions": [
+        "Exactly one new note created inside the expected folder",
+        "Filename has no link-breaking characters",
+        "YAML frontmatter with tags list and created date",
+        "Summary callout within first 40 lines",
+        "At least one Markdown table",
+        "At least 2 distinct callout types",
+        "At least one [[wikilink]]",
+        "Related-links section heading",
+        "No plugin-only syntax",
+        "Filename starts with ISO date",
+        "TODO checklist with owner 田中 and deadline",
+        "Carry-over item in question/todo callout",
+        "Records Cognito / 11月 / 並行稼働"
+      ]
+    }
+  ]
+}

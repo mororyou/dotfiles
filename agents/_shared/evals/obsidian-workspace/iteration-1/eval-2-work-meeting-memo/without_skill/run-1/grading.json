@@ -1,0 +1,78 @@
+{
+  "expectations": [
+    {
+      "text": "Exactly one new note created inside vault/Works/IJU/",
+      "passed": true,
+      "evidence": "new notes: ['Works/IJU/2026-09-19 IJU 定例.md']"
+    },
+    {
+      "text": "Filename has no link-breaking characters (: / \\ * ? \" < > | # ^ [ ])",
+      "passed": true,
+      "evidence": "filename: '2026-09-19 IJU 定例'"
+    },
+    {
+      "text": "YAML frontmatter present with tags list and created date (YYYY-MM-DD)",
+      "passed": false,
+      "evidence": "frontmatter: title: IJU 定例 2026-09-19 | date: 2026-09-19 | project: IJU | type: meeting | tags: |   - IJU |   - 定例 |   - 議事録 |   - 認証 |   - Cognito |   - Auth0"
+    },
+    {
+      "text": "Summary callout ([!abstract]/[!summary]/[!tldr]) within first 40 lines",
+      "passed": true,
+      "evidence": "top callouts: ['summary', 'warning']"
+    },
+    {
+      "text": "At least one Markdown table",
+      "passed": false,
+      "evidence": "tables found: 0"
+    },
+    {
+      "text": "At least 2 distinct callout types used",
+      "passed": true,
+      "evidence": "callout types: ['summary', 'warning']"
+    },
+    {
+      "text": "At least one [[wikilink]] to another note",
+      "passed": false,
+      "evidence": "wikilinks: []"
+    },
+    {
+      "text": "Has a related-links section heading (関連 / Related)",
+      "passed": true,
+      "evidence": "headings: ['決定事項', 'TODO', '持ち越し・未決事項', '次回までに', '関連']"
+    },
+    {
+      "text": "No plugin-only syntax (dataview / templater)",
+      "passed": true,
+      "evidence": "checked for ```dataview and <%"
+    },
+    {
+      "text": "Filename starts with ISO date (YYYY-MM-DD)",
+      "passed": true,
+      "evidence": "filename: '2026-09-19 IJU 定例'"
+    },
+    {
+      "text": "TODO checklist with owner 田中 and deadline",
+      "passed": true,
+      "evidence": "checkbox=True 田中=True"
+    },
+    {
+      "text": "Carry-over item in a question/todo callout",
+      "passed": true,
+      "evidence": "callouts: ['summary', 'warning']"
+    },
+    {
+      "text": "Records all decisions: Cognito, 11月, 並行稼働",
+      "passed": true,
+      "evidence": "keys present: {'Cognito': True, '11': True, '並行': True}"
+    }
+  ],
+  "summary": {
+    "passed": 10,
+    "failed": 3,
+    "total": 13,
+    "pass_rate": 0.7692
+  },
+  "execution_metrics": {
+    "output_chars": 982
+  }
+}

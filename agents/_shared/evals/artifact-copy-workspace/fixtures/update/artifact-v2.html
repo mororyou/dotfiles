@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset=utf8></head><body>
+<title>小さく始めて、大きく育てる</title>
+<h1>Terraform モジュール分割ガイド</h1>
+<p>本ドキュメントは Terraform のモジュール分割方針をまとめたものです。</p>
+<h2>1. ルートモジュールは環境ごと</h2><p>env/prod, env/stg に分ける。</p>
+<h2>2. 共通リソースは modules/ に切り出す</h2><p>VPC・IAM・RDS を単位にする。</p>
+<h2>3. tfstate は環境ごとに分離する</h2><p>S3 バックエンドのキーを env で分ける。</p>
+<h2>4. バージョン固定</h2><p>required_version と provider の制約を必ず書く。</p>
+</body></html>

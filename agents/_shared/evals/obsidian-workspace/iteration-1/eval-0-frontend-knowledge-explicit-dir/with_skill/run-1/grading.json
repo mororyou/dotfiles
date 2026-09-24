@@ -1,0 +1,73 @@
+{
+  "expectations": [
+    {
+      "text": "Exactly one new note created inside vault/Engineering/Frontend/",
+      "passed": true,
+      "evidence": "new notes: ['Engineering/Frontend/React Server Components と Client Components の使い分け.md']"
+    },
+    {
+      "text": "Filename has no link-breaking characters (: / \\ * ? \" < > | # ^ [ ])",
+      "passed": true,
+      "evidence": "filename: 'React Server Components と Client Components の使い分け'"
+    },
+    {
+      "text": "YAML frontmatter present with tags list and created date (YYYY-MM-DD)",
+      "passed": true,
+      "evidence": "frontmatter: title: React Server Components と Client Components の使い分け | type: knowledge | status: 🌿 growing | created: 2026-09-19 | updated: 2026-09-19 | tags: |   - frontend |   - react |   - nextjs |   - react/server-components | a"
+    },
+    {
+      "text": "Summary callout ([!abstract]/[!summary]/[!tldr]) within first 40 lines",
+      "passed": true,
+      "evidence": "top callouts: ['abstract']"
+    },
+    {
+      "text": "At least one Markdown table",
+      "passed": true,
+      "evidence": "tables found: 3"
+    },
+    {
+      "text": "At least 2 distinct callout types used",
+      "passed": true,
+      "evidence": "callout types: ['abstract', 'example', 'failure', 'info', 'question', 'tip', 'warning']"
+    },
+    {
+      "text": "At least one [[wikilink]] to another note",
+      "passed": true,
+      "evidence": "wikilinks: ['Next.js App Router データ取得パターン', 'Server Actions とフォーム処理']"
+    },
+    {
+      "text": "Has a related-links section heading (関連 / Related)",
+      "passed": true,
+      "evidence": "headings: ['📌 ポイント', '🔍 詳細', '2 種類のコンポーネントの比較', '境界がどう伸びるか', '境界の置き方 — 3 つの定石', 'データ取得の置き場所', \"`'use client'` を付ける判断フロー\", 'よくある誤解', '🧪 実装時の確認', '🔗 関連']"
+    },
+    {
+      "text": "No plugin-only syntax (dataview / templater)",
+      "passed": true,
+      "evidence": "checked for ```dataview and <%"
+    },
+    {
+      "text": "Contains a Mermaid diagram",
+      "passed": true,
+      "evidence": "mermaid block present: True"
+    },
+    {
+      "text": "Mentions 'use client' directive",
+      "passed": true,
+      "evidence": "'use client' present: True"
+    },
+    {
+      "text": "Has a warning/caution callout for pitfalls",
+      "passed": true,
+      "evidence": "callouts: ['abstract', 'example', 'failure', 'info', 'question', 'tip', 'warning']"
+    }
+  ],
+  "summary": {
+    "passed": 12,
+    "failed": 0,
+    "total": 12,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 10859
+  }
+}

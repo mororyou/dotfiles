@@ -1,0 +1,33 @@
+{
+  "eval_name": "eval-1-multi-file-artifact",
+  "configuration": "without_skill",
+  "passed": 5,
+  "total": 5,
+  "expectations": [
+    {
+      "text": "index.html が保存されている",
+      "passed": true,
+      "evidence": "保存物: ['チーム稼働ダッシュボード/assets/app.js', 'チーム稼働ダッシュボード/index.html', 'チーム稼働ダッシュボード/style.css', 'チーム稼働ダッシュボード/チーム稼働ダッシュボード.md']"
+    },
+    {
+      "text": "style.css が index.html と同じ階層に保存されている",
+      "passed": true,
+      "evidence": "index: チーム稼働ダッシュボード/index.html / css: チーム稼働ダッシュボード/style.css"
+    },
+    {
+      "text": "app.js が保存されている",
+      "passed": true,
+      "evidence": "チーム稼働ダッシュボード/assets/app.js"
+    },
+    {
+      "text": "3 ファイルが 1 つのフォルダにまとまっている",
+      "passed": true,
+      "evidence": "保存物 4 件: ['チーム稼働ダッシュボード/assets/app.js', 'チーム稼働ダッシュボード/index.html', 'チーム稼働ダッシュボード/style.css', 'チーム稼働ダッシュボード/チーム稼働ダッシュボード.md']"
+    },
+    {
+      "text": "index.html の相対参照が保存後も解決する",
+      "passed": true,
+      "evidence": "解決できない参照: なし"
+    }
+  ]
+}

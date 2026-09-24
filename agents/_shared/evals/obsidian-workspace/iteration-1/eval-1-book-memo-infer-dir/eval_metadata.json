@@ -1,0 +1,20 @@
+{
+  "eval_id": 1,
+  "eval_name": "eval-1-book-memo-infer-dir",
+  "prompt": "『達人プログラマー』を読み終えたので読書メモを Obsidian に残して。刺さったのは DRY 原則、直交性、曳光弾（tracer bullets）、割れ窓理論、契約による設計あたり。評価は 5 段階で 5。ボルトは {VAULT} にある（普段の Knowledge ボルトのコピー）。",
+  "assertions": [
+    "Exactly one new note created inside the expected folder",
+    "Filename has no link-breaking characters",
+    "YAML frontmatter with tags list and created date",
+    "Summary callout within first 40 lines",
+    "At least one Markdown table",
+    "At least 2 distinct callout types",
+    "At least one [[wikilink]]",
+    "Related-links section heading",
+    "No plugin-only syntax",
+    "Covers all 5 concepts",
+    "Rating 5/5 recorded",
+    "Action checklist (- [ ])",
+    "Frontmatter type book / book tag"
+  ]
+}

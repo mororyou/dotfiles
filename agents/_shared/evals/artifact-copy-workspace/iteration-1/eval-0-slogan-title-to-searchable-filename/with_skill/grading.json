@@ -1,0 +1,33 @@
+{
+  "eval_name": "eval-0-slogan-title-to-searchable-filename",
+  "configuration": "with_skill",
+  "passed": 5,
+  "total": 5,
+  "expectations": [
+    {
+      "text": "AI/Artifacts 配下に HTML が 1 件保存されている",
+      "passed": true,
+      "evidence": "見つかった HTML: ['Terraform モジュール分割ガイド']"
+    },
+    {
+      "text": "ファイル名が <title> の標語そのままになっていない",
+      "passed": true,
+      "evidence": "ファイル名: ['Terraform モジュール分割ガイド']"
+    },
+    {
+      "text": "ファイル名が内容 (Terraform のモジュール分割) を表す名詞句になっている",
+      "passed": true,
+      "evidence": "ファイル名: ['Terraform モジュール分割ガイド']"
+    },
+    {
+      "text": "出所コメントが埋め込まれている",
+      "passed": true,
+      "evidence": "<!-- claude-artifact source=\"https://claude.ai/artifact/TC100\" saved=\"2026-09-19\" -->"
+    },
+    {
+      "text": "元 HTML の本文が保持されている",
+      "passed": true,
+      "evidence": "tfstate の記述: あり"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "eval_id": 0,
+  "eval_name": "eval-0-frontend-knowledge-explicit-dir",
+  "prompt": "React Server Components と Client Components の使い分けについて、境界の置き方・データ取得・'use client' の判断基準・よくある誤解をまとめたノートを Obsidian に作って。作成先は Engineering/Frontend で。ボルトは {VAULT} にある（普段の Knowledge ボルトのコピー）。",
+  "assertions": [
+    "Exactly one new note created inside the expected folder",
+    "Filename has no link-breaking characters",
+    "YAML frontmatter with tags list and created date",
+    "Summary callout within first 40 lines",
+    "At least one Markdown table",
+    "At least 2 distinct callout types",
+    "At least one [[wikilink]]",
+    "Related-links section heading",
+    "No plugin-only syntax",
+    "Contains a Mermaid diagram",
+    "Mentions 'use client'",
+    "Warning/caution callout for pitfalls"
+  ]
+}

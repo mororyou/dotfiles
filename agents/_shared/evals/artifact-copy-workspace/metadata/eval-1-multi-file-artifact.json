@@ -1,0 +1,12 @@
+{
+  "eval_id": 1,
+  "eval_name": "multi-file-artifact",
+  "prompt": "index.html + style.css + app.js の 3 ファイル構成のアーティファクトを保存させ、参照が壊れないかを見る",
+  "assertions": [
+    "index.html が保存されている",
+    "style.css が index.html と同じ階層に保存されている",
+    "app.js が保存されている",
+    "3 ファイルが 1 つのフォルダにまとまっている (AI/Artifacts 直下に散らばっていない)",
+    "index.html 内の相対参照 href=\"style.css\" が保存後も解決できる配置になっている"
+  ]
+}

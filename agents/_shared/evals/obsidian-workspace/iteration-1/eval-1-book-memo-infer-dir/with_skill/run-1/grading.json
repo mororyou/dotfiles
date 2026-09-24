@@ -1,0 +1,78 @@
+{
+  "expectations": [
+    {
+      "text": "Exactly one new note created inside vault/Books/",
+      "passed": true,
+      "evidence": "new notes: ['Books/達人プログラマー.md']"
+    },
+    {
+      "text": "Filename has no link-breaking characters (: / \\ * ? \" < > | # ^ [ ])",
+      "passed": true,
+      "evidence": "filename: '達人プログラマー'"
+    },
+    {
+      "text": "YAML frontmatter present with tags list and created date (YYYY-MM-DD)",
+      "passed": true,
+      "evidence": "frontmatter: title: 達人プログラマー | type: book | status: 🌿 growing | created: 2026-09-19 | updated: 2026-09-19 | tags: |   - book |   - software-design |   - engineering/principles | aliases: |   - The Pragmatic Programmer |   - Pragmatic P"
+    },
+    {
+      "text": "Summary callout ([!abstract]/[!summary]/[!tldr]) within first 40 lines",
+      "passed": true,
+      "evidence": "top callouts: ['abstract']"
+    },
+    {
+      "text": "At least one Markdown table",
+      "passed": true,
+      "evidence": "tables found: 2"
+    },
+    {
+      "text": "At least 2 distinct callout types used",
+      "passed": true,
+      "evidence": "callout types: ['abstract', 'example', 'quote', 'tip', 'warning']"
+    },
+    {
+      "text": "At least one [[wikilink]] to another note",
+      "passed": true,
+      "evidence": "wikilinks: ['リファクタリング', 'A Philosophy of Software Design']"
+    },
+    {
+      "text": "Has a related-links section heading (関連 / Related)",
+      "passed": true,
+      "evidence": "headings: ['💡 学び（刺さった 5 つの原則）', '原則同士の関係', '📝 原則ごとのメモ', 'DRY 原則', '直交性', '曳光弾', '割れ窓理論', '契約による設計', '🎯 行動に変えること', '🔗 関連']"
+    },
+    {
+      "text": "No plugin-only syntax (dataview / templater)",
+      "passed": true,
+      "evidence": "checked for ```dataview and <%"
+    },
+    {
+      "text": "Covers all 5 concepts (DRY, 直交性, 曳光弾, 割れ窓, 契約による設計)",
+      "passed": true,
+      "evidence": "missing: []"
+    },
+    {
+      "text": "Rating 5/5 recorded (⭐⭐⭐⭐⭐ or 5)",
+      "passed": true,
+      "evidence": "rating markers found"
+    },
+    {
+      "text": "Has an action checklist (- [ ])",
+      "passed": true,
+      "evidence": "checkbox present: True"
+    },
+    {
+      "text": "Frontmatter has type book or a book tag",
+      "passed": true,
+      "evidence": "fm: title: 達人プログラマー | type: book | status: 🌿 growing | created: 2026-09-19 | updated: 2026-09-19 | tags: |   - book |   - software-design |   - engineering/principles | aliases: |   - The Pragmatic Programmer |   - Pragmatic P"
+    }
+  ],
+  "summary": {
+    "passed": 13,
+    "failed": 0,
+    "total": 13,
+    "pass_rate": 1.0
+  },
+  "execution_metrics": {
+    "output_chars": 4483
+  }
+}
