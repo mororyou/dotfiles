@@ -6,6 +6,7 @@ TARGET_DIR="$HOME/.agents"
 
 ln -sfn $SHARED_DIR/evals $TARGET_DIR/evals
 ln -sfn $SHARED_DIR/rules $TARGET_DIR/rules
+ln -sfn $SHARED_DIR/agents $TARGET_DIR/agents
 
 mkdir -p "$TARGET_DIR/skills"
 
