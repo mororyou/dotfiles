@@ -275,12 +275,14 @@ task_id: DEV-1622
 
 | Role | 起動方法 | 定義ファイル |
 |---|---|---|
-| Researcher | Codex `researcher`（Qwen なら `codex --oss --local-provider lmstudio`） | `~/.codex/agents/researcher.toml` |
+| Researcher | Codex に「`researcher` に〜させて」と指示（Qwen なら `codex --oss --local-provider lmstudio`） | `~/.codex/agents/researcher.toml` |
 | Architect | Claude Code / Cursor サブエージェント `architect` | `~/.claude/agents/architect.md` |
-| Implementer | Codex `implementer` | `~/.codex/agents/implementer.toml` |
+| Implementer | Codex に「`implementer` に〜させて」と指示 | `~/.codex/agents/implementer.toml` |
 | Reviewer | Claude Code / Cursor サブエージェント `reviewer` | `~/.claude/agents/reviewer.md` |
 
-Cursor は `~/.claude/agents/` と `~/.codex/agents/` を互換パスとして読むので、Cursor 内から `/architect` `/reviewer` のように呼べる。
+- Codex のカスタムエージェントは一覧コマンドが無く、プロンプトで名前を指定すると Codex 本体が spawn する。`/agent` は spawn 後のスレッド切り替え用
+  - 非対話の例: `codex exec "Have the researcher agent ... product_memory_root: Works/1D, task_id: DEV-1622, 経路: Feature"`
+- Cursor は `~/.claude/agents/` と `~/.codex/agents/` を互換パスとして読むので、Cursor 内から `/architect` `/reviewer` のように呼べる
 
 渡さないもの:
 

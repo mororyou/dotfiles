@@ -70,20 +70,18 @@ for agent in "$HOME/dotfiles/agents/claude/agents"/*.md; do
 done
 
 # ~/.codex agents (Cursor も ~/.codex/agents を互換パスとして読む)
+# Codex はディレクトリ内のファイル symlink を辿らない（"agent type is currently not available" になる）ので、
+# ファイル単位ではなくディレクトリごと symlink する
 echo "Symlinking codex agents..."
 
 CODEX_AGENTS="$HOME/.codex/agents"
 
-mkdir -p "$CODEX_AGENTS"
-
-for agent in "$HOME/dotfiles/agents/codex/agents"/*.toml; do
-  [ -f "$agent" ] || continue
-
-  name="$(basename "$agent")"
-
-  ln -sfn "$agent" "$CODEX_AGENTS/$name"
-  echo "linked (codex agent): $name"
-done
+if [ -d "$CODEX_AGENTS" ] && [ ! -L "$CODEX_AGENTS" ]; then
+  echo "skip (codex agents): $CODEX_AGENTS is a real directory. Move its contents into dotfiles/agents/codex/agents and remove it, then rerun."
+else
+  ln -sfn "$HOME/dotfiles/agents/codex/agents" "$CODEX_AGENTS"
+  echo "linked (codex agents dir): $CODEX_AGENTS"
+fi
 
 # ~/.cursor skills
 echo "Symlinking cursor skills..."
