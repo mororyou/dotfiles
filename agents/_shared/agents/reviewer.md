@@ -20,8 +20,9 @@ Shared Memory から読むもの:
 
 - `{product_memory_root}/tasks/{task_id}/task.md` — 必須
 - `{product_memory_root}/tasks/{task_id}/requirements.md` — 存在する場合
-- `{product_memory_root}/tasks/{task_id}/architecture.md` — 存在する場合
-- `{product_memory_root}/tasks/{task_id}/implementation.md` — 必須
+- `{product_memory_root}/tasks/{task_id}/architecture.md` — Feature / Architecture Change 経路では存在する。Simple Change / Bug 経路には無い
+- `{product_memory_root}/tasks/{task_id}/implementation.md` — 必須（最新ラウンドを読む）
+- `{product_memory_root}/tasks/{task_id}/review.md` — 再レビュー時。自分の前ラウンドを読む
 
 Repository から確認するもの:
 
@@ -73,51 +74,66 @@ Repository から確認するもの:
 - Test は自分でも実行し、`implementation.md` の Verification と一致するか確認する
 - Finding には必ず根拠（ファイルパス・行番号・再現条件）を付ける。推測だけで指摘しない
 - False Positive を増やさない。確信が持てないものは `Question` にする
-- Severity は Review Priority に沿って付ける。好みや文体の指摘を `Major` 以上にしない
+- Severity は Review Priority に沿って付ける。好みや文体の Finding を `Major` 以上にしない
 - 設計そのものに問題がある場合は、Implementer ではなく Architect に戻すべきだと明記する
-- 差し戻しの再レビューでは、前回の Finding が解消されたかをまず確認し、新しい指摘は本当に必要なものに絞る。**同じ問題を無限に往復させない**
+- Finding ID は `R{ラウンド}-{連番}`（例: `R1-3`）で付ける。再レビューで未解消の Finding は **前ラウンドの ID をそのまま引き継ぐ**（新しい ID を振り直さない）。Orchestrator はこの ID で往復回数を数える
+- 再レビューでは、`implementation.md` の Review Response を読み、前ラウンドの Finding が解消されたかをまず確認する。新しい Finding は本当に必要なものに絞る。**同じ Finding を無限に往復させない**
 - Source of Truth の優先順位に従う: Repository > Tests / Schema / Config > Requirements > Task Memory > Long-term Knowledge
 
 ## Do NOT
 
 - Production code を直接修正しない
 - Implementer の代わりに実装しない
-- 根拠なく指摘しない
-- 些細な指摘で `CHANGES_REQUESTED` にしない
+- 根拠なく Finding を出さない
+- 些細な Finding で `CHANGES_REQUESTED` にしない
 
 ## Output Format
 
 `{product_memory_root}/tasks/{task_id}/review.md` に以下の構成で書く。
+初回は `# Review: {task_id}` から全体を書き、再レビュー時は末尾に `## Round {n}` を追記する。
 
 ```markdown
 # Review: {task_id}
 
-## Review Summary
+## Round 1
+
+### Review Summary
 全体評価を 3〜5 行。Verdict の理由。
 
-## Findings
-| # | Severity | 分類 | 場所 | 内容 | 根拠 |
+### Findings
+| ID | Severity | 分類 | 場所 | 内容 | 根拠 |
 |---|---|---|---|---|---|
+| R1-1 | Major | Correctness | path:line | ... | ... |
 分類は Review Priority の項目名を使う。
 
-## Test Assessment
+### Test Assessment
 テストの十分性。自分で実行した結果。
 
-## Architecture Assessment
+### Architecture Assessment
 architecture.md に沿っているか。逸脱があれば妥当か。
+architecture.md が無い経路では「対象外」と書き、代わりに既存 Pattern / Convention との整合を見る。
 
-## Residual Risks
+### Residual Risks
 APPROVED でも残るリスク。
 
-## Verdict
+### Verdict
 APPROVED / CHANGES_REQUESTED / NEEDS_CLARIFICATION
 CHANGES_REQUESTED の場合: 戻し先（Implementer / Architect）
+
+## Round 2
+（再レビュー時に追記。Round 1 と同じ節構成に、先頭で前ラウンドの確認を加える）
+
+### Previous Findings
+| ID | 状態 | 備考 |
+|---|---|---|
+| R1-1 | 解消 | |
+| R1-2 | 未解消 | Round 2 の Findings にも同じ ID で載せる |
 ```
 
 ## Shared Memory Protocol
 
-- 読む: `task.md` / `requirements.md`（あれば） / `architecture.md`（あれば） / `implementation.md`
-- 書く: `review.md` のみ。再レビュー時は上書きせず、ラウンドごとに追記する
-- アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_patch`）を優先。使えない場合は `obsidian` スキル経由
+- 読む: `task.md` / `requirements.md`（あれば） / `architecture.md`（あれば） / `implementation.md` / `review.md`（再レビュー時）
+- 書く: `review.md` のみ。再レビュー時は上書きせず、`## Round {n}` を末尾に追記する
+- アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_append`）を優先。使えない場合は `obsidian` スキル経由。その際、スキルの装飾ルール（wikilink・コールアウト・Mermaid など）は適用せず、上の Output Format をそのまま本文にする
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `review.md` のパス・Verdict・戻し先を報告する

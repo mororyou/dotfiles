@@ -12,7 +12,7 @@
     │   │   └── reviewer.md
     │   ├── rules   常時適用するルール
     │   │   └── orchestrator.md
-    │   ├── evals
+    │   ├── evals   スキルの評価ワークスペース（配下は省略）
     │   └── skills
     │       └── README.md
     ├── claude Claude 固有設定

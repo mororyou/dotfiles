@@ -6,6 +6,11 @@ Orchestrator は Cursor 本体が担い、複数の AI Agent に役割分担さ�
 - 主な問い: **次に誰が何をするべきか？**
 - 原則: **まず動かす。** 完全自動化・大量 Agent・Cloud・複雑な並列実行を目指さない。
 
+> **適用範囲**
+> このルールは Orchestrator（Cursor）として振る舞うときだけ有効。
+> `~/.agents/agents/{role}.md` のいずれかの役割で起動された場合は、その役割定義に従い、本ルールは適用しない。
+> Agent は自分でルーティングしたり Human へ直接報告したりせず、必ず Orchestrator に返す。
+
 ---
 
 ## 1. Team
@@ -59,7 +64,33 @@ Orchestrator
 ```
 
 - `grill-me` は常設 Agent ではなく、Orchestrator が必要に応じて使う Requirements Clarification の手段
-- 結果は `requirements.md` に保存し、以降の Agent には Requirements として渡す
+- 結果は Orchestrator が `requirements.md` に保存し、以降の Agent には Requirements として渡す
+
+### requirements.md
+
+`{product_memory_root}/tasks/{task_id}/requirements.md` に以下の構成で書く。
+
+```markdown
+# Requirements: {task_id}
+
+## User Goal
+ユーザーが最終的に達成したいこと。
+
+## Requirements
+満たすべき要件。番号付きで。
+
+## Constraints
+技術・運用・期限などの制約。
+
+## Non-goals
+今回やらないこと。
+
+## Edge Cases
+考慮すべき境界条件・異常系。
+
+## Open Questions
+未確定のこと。誰が決めるか。
+```
 
 ---
 
@@ -82,6 +113,10 @@ Orchestrator
 - **Architecture Change**: Interface・Layer・Data Flow を変える。Implementer に渡す前に Human の承認を得る
 
 迷ったら重い経路を選ぶ。途中で想定より複雑だと分かったら、その時点で経路を上げる。
+
+経路に関わらず、**`task.md` は必ず作る**（Simple Change でも同じ）。Implementer は `task.md` を必須入力にしている。
+
+`architecture.md` が無い経路（Simple Change / Bug）では、Implementer は `task.md` の Goal（Bug では加えて `research.md` の Potential Impact Areas）をスコープとして実装する。それを超える変更が必要だと Implementer が報告してきたら、経路を Feature に上げて Architect に渡す。
 
 ---
 
@@ -136,9 +171,14 @@ Works/
 
 ### アクセス方法
 
-1. **obsidian MCP を優先する**: `vault_read` / `vault_write` / `vault_patch` / `vault_list`
-2. MCP が使えない環境では `obsidian` スキル経由で読み書きする
+1. **obsidian MCP を優先する**: `vault_read` / `vault_write` / `vault_append` / `vault_patch` / `vault_list`
+2. MCP が使えない環境では `obsidian` スキル経由で読み書きする。その際、スキルの装飾ルール（wikilink・コールアウト・Mermaid・要約コールアウトなど）は適用せず、各 Agent の Output Format テンプレートをそのまま本文にする。`--type work` を使い、追記は `--append` で行う
 3. Agent 自身に Vault の絶対パスや操作方法を持たせない
+
+### タスクディレクトリの作成
+
+- `{product_memory_root}/tasks/{task_id}/` は、Orchestrator が `task.md` を書くときに作る（`vault_write` は親ディレクトリを自動作成する。作成されなかった場合は `obsidian` スキル経由で作る）
+- `{task_id}` はチケット ID（例: `DEV-1622`）を使う。チケットが無い場合は `YYYYMMDD-{短い slug}`（例: `20260925-fix-login-redirect`）
 
 ### Memory Context
 
@@ -153,13 +193,44 @@ Agent は `{product_memory_root}/tasks/{task_id}/research.md` のように扱う
 
 ### task.md
 
-Orchestrator が作成・更新する。内容:
+Orchestrator が作成・更新する。`{product_memory_root}/tasks/{task_id}/task.md` に以下の構成で書く。
 
-- Goal
-- Context
-- Status
-- Workflow（選択した経路と現在位置）
-- Artifact links
+```markdown
+# Task: {task_id}
+
+## Goal
+このタスクで達成すること。1〜3 行。
+
+## Context
+背景。関連チケット・関連 knowledge/ へのリンク。
+
+## Status
+Clarifying | Researching | Designing | Awaiting Human | Implementing | Reviewing | Done | Blocked
+
+## Workflow
+選択した経路（Simple / Bug / Feature / Architecture Change）と現在位置。
+例: Feature — Researcher ✔ → Architect ✔ → Implementer (now) → Reviewer
+
+## Artifact links
+- requirements.md: （あれば）
+- research.md:
+- architecture.md:
+- implementation.md:
+- review.md:
+
+## Log
+Handoff・差し戻し・Human 確認の履歴。日時と一言。
+```
+
+Status の意味:
+
+| Status | 状態 |
+|---|---|
+| `Clarifying` | grill-me で要求を明確化中 |
+| `Researching` / `Designing` / `Implementing` / `Reviewing` | 該当 Agent に Handoff 中 |
+| `Awaiting Human` | Architecture Change の承認待ち、または `NEEDS_CLARIFICATION` / エスカレーション |
+| `Done` | Completion Criteria を満たし Human へ報告済み |
+| `Blocked` | 進められない。理由を Log に書く |
 
 ### 保存するもの・しないもの
 
@@ -184,9 +255,21 @@ Memory と Repository が矛盾する場合は Repository を確認する。古�
 
 Agent を起動するときは、次を渡す。
 
-- Memory Context（`product_memory_root` / `task_id`）
-- その Agent が読むべき Artifact の名前（`~/.agents/agents/{role}.md` の Input に従う）
-- タスク固有の補足があれば最小限の要約
+1. **役割定義のパス**: `~/.agents/agents/{role}.md`。「まずこれを読み、この役割として振る舞う」と明示する
+2. **Memory Context**: `product_memory_root` / `task_id`
+3. **読むべき Artifact の名前**: 役割定義の Input に従う。差し戻しの場合は `review.md` / `implementation.md` も含める
+4. **経路**: Simple / Bug / Feature / Architecture Change のどれか（`architecture.md` の有無を Agent が判断できるように）
+5. タスク固有の補足があれば最小限の要約
+
+起動プロンプトの例:
+
+```text
+~/.agents/agents/implementer.md を読み、Implementer として振る舞ってください。
+product_memory_root: Works/1D
+task_id: DEV-1622
+経路: Feature
+読むもの: task.md, architecture.md
+```
 
 渡さないもの:
 
@@ -215,9 +298,17 @@ Handoff のたびに `task.md` の Status と Artifact links を更新する。
 | `CHANGES_REQUESTED`（設計の問題） | Architect → Implementer → Reviewer |
 | `NEEDS_CLARIFICATION` | Human へ確認し、必要なら `requirements.md` を更新して該当 Agent へ戻す |
 
-Implementer が Architect の Plan に問題を見つけて戻してきた場合も、Orchestrator 経由で Architect へ渡す。
+Reviewer 以外からの差し戻しも Orchestrator 経由で扱う。
 
-**同じ問題を無限に往復させない。** 同じ指摘で 2 回往復しても解決しない場合は Human へ戻す。
+| 発生元 | 内容 | 次の動き |
+|---|---|---|
+| Implementer | Architect の Plan に問題がある | Architect → Implementer → Reviewer |
+| Implementer | `architecture.md` が無い経路でスコープを超える変更が必要 | 経路を Feature に上げて Architect へ |
+| Architect | `research.md` に無い事実が必要 | Researcher（追加調査）→ Architect |
+
+差し戻しのたびに `review.md` / `implementation.md` / `architecture.md` は **上書きせずラウンドを追記**する。Verdict や検証結果は常に最新ラウンドのものを見る。
+
+**同じ Finding を無限に往復させない。** 同じ Finding ID（`R1-3` など。Reviewer が前ラウンドから引き継ぐ）が 3 回目の review.md にも未解消で残ったら、Orchestrator が止めて Human へ戻す。
 
 ---
 
@@ -244,9 +335,9 @@ v0.1 では自動化しない。Orchestrator または Human が必要性を判�
 タスク完了として Human へ報告できる条件:
 
 - 選択した経路の Agent がすべて完了している
-- Reviewer を通した経路では Verdict が `APPROVED`
-- `implementation.md` に Test / Typecheck / Lint の結果が記録されている
-- `task.md` の Status が完了になっていて、全 Artifact へのリンクがある
+- Reviewer を通した経路では、最新ラウンドの Verdict が `APPROVED`
+- `implementation.md` の最新ラウンドに Test / Typecheck / Lint / Build の結果が記録されている
+- `task.md` の Status が `Done` になっていて、全 Artifact へのリンクがある
 - Human への報告に、変更概要・検証結果・残った懸念を含めている
 
 ## 11. v0.1 でやらないこと

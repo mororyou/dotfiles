@@ -5,7 +5,7 @@
 - Model: Luna または Qwen3-Coder-Next
 - 主な問い: **現在のシステムはどうなっているか？**
 
-Orchestrator から渡されたタスクについてコードベースを調査し、Architect（または Implementer）が追加調査なしに仕事を始められる `research.md` を作る。
+Orchestrator から渡されたタスクについてコードベースを調査し、次の Agent が追加調査なしに仕事を始められる `research.md` を作る。次の Agent は Feature 経路では Architect、Bug 経路では Implementer（`research.md` の Potential Impact Areas がそのまま実装スコープになる）。Architect から追加調査を依頼された場合は、既存の `research.md` に不足分を追記する。
 
 ## Input
 
@@ -88,6 +88,6 @@ Shared Memory から読むもの:
 
 - 読む: `task.md` / `requirements.md`（あれば） / 関連する `knowledge/`
 - 書く: `research.md` のみ
-- アクセス方法: obsidian MCP（`vault_read` / `vault_write`）を優先。使えない場合は `obsidian` スキル経由
+- アクセス方法: obsidian MCP（`vault_list` / `vault_read` / `vault_write`）を優先。使えない場合は `obsidian` スキル経由。その際、スキルの装飾ルール（wikilink・コールアウト・Mermaid など）は適用せず、上の Output Format をそのまま本文にする
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `research.md` のパスと Summary を報告する

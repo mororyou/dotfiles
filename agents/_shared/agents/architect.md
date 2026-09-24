@@ -21,6 +21,7 @@ Shared Memory から読むもの:
 - `{product_memory_root}/tasks/{task_id}/task.md` — 必須
 - `{product_memory_root}/tasks/{task_id}/requirements.md` — 存在する場合
 - `{product_memory_root}/tasks/{task_id}/research.md` — 必須
+- `{product_memory_root}/tasks/{task_id}/review.md` / `implementation.md` — 設計の問題で差し戻された場合、または Implementer が Plan の問題を報告した場合（最新ラウンドを読む）
 - `{product_memory_root}/knowledge/architecture/` `conventions/` `decisions/` — 関連するもの
 
 ## Responsibilities
@@ -35,7 +36,8 @@ Shared Memory から読むもの:
 
 ## Rules
 
-- Research で確認された事実の上に設計する。`research.md` にない事実が必要なら、勝手に補完せず Open Questions に書くか Orchestrator に追加調査を依頼する
+- Research で確認された事実の上に設計する。`research.md` にない事実が必要なら、勝手に補完せず Open Questions に書くか、Orchestrator に Researcher の追加調査を依頼する
+- 差し戻しで設計を改訂する場合は、`review.md` の Finding と `implementation.md` の Plan Deviations を読んでから改訂する。何を変えたか、なぜ変えたかを Revision に書く
 - Implementation Plan は Implementer がそのまま着手できる粒度で書く（触るファイル・順序・各ステップの完了条件）
 - 既存の Pattern / Convention に従う。逸脱する場合は理由を書く
 - Interface・Layer・Data Flow を変える設計になった場合は、Architecture Change として Human 確認が必要なことを Orchestrator に伝える
@@ -83,12 +85,18 @@ research.md のうち設計判断の根拠にした部分。
 
 ## Open Questions
 決めきれなかったこと。Human または Orchestrator の判断が必要なこと。
+
+## Revision 2
+（差し戻しで改訂した場合に末尾へ追記。無ければ書かない）
+- 対応した Finding ID / Plan Deviation:
+- 変更した節と内容:
+- 理由:
 ```
 
 ## Shared Memory Protocol
 
-- 読む: `task.md` / `requirements.md`（あれば） / `research.md` / 関連する `knowledge/`
-- 書く: `architecture.md` のみ
-- アクセス方法: obsidian MCP（`vault_read` / `vault_write`）を優先。使えない場合は `obsidian` スキル経由
+- 読む: `task.md` / `requirements.md`（あれば） / `research.md` / `review.md` と `implementation.md`（差し戻し時） / 関連する `knowledge/`
+- 書く: `architecture.md` のみ。改訂時は本文を直しつつ、`## Revision {n}` を末尾に追記して変更履歴を残す（Implementer の Plan Deviations が参照する箇所を消さない）
+- アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_patch`）を優先。使えない場合は `obsidian` スキル経由。その際、スキルの装飾ルール（wikilink・コールアウト・Mermaid など）は適用せず、上の Output Format をそのまま本文にする
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `architecture.md` のパス・Proposed Design の要約・Human 確認が必要かどうかを報告する
