@@ -53,7 +53,39 @@ for skill in "$TARGET_DIR/skills"/*; do
   echo "linked (codex): $name"
 done
 
-# ~/.cursor skills 
+# ~/.claude agents (Cursor も ~/.claude/agents を互換パスとして読む)
+echo "Symlinking claude agents..."
+
+CLAUDE_AGENTS="$HOME/.claude/agents"
+
+mkdir -p "$CLAUDE_AGENTS"
+
+for agent in "$HOME/dotfiles/agents/claude/agents"/*.md; do
+  [ -f "$agent" ] || continue
+
+  name="$(basename "$agent")"
+
+  ln -sfn "$agent" "$CLAUDE_AGENTS/$name"
+  echo "linked (claude agent): $name"
+done
+
+# ~/.codex agents (Cursor も ~/.codex/agents を互換パスとして読む)
+echo "Symlinking codex agents..."
+
+CODEX_AGENTS="$HOME/.codex/agents"
+
+mkdir -p "$CODEX_AGENTS"
+
+for agent in "$HOME/dotfiles/agents/codex/agents"/*.toml; do
+  [ -f "$agent" ] || continue
+
+  name="$(basename "$agent")"
+
+  ln -sfn "$agent" "$CODEX_AGENTS/$name"
+  echo "linked (codex agent): $name"
+done
+
+# ~/.cursor skills
 echo "Symlinking cursor skills..."
 
 CURSOR_SKILLS="$HOME/.cursor/skills"

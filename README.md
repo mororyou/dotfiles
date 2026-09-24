@@ -16,12 +16,16 @@
     │   └── skills
     │       └── README.md
     ├── claude Claude 固有設定
-    │   ├── agents
+    │   ├── agents  サブエージェント定義（_shared/agents の本体を参照する薄いラッパー）
+    │   │   ├── architect.md   model: fable
+    │   │   └── reviewer.md    model: fable
     │   └── skills
     │       ├── README.md
     │       └── shared -> ../../_shared/skills
     ├── codex
-    │   ├── agents
+    │   ├── agents  カスタムエージェント定義（同上）
+    │   │   ├── researcher.toml   gpt-6-luna / Qwen は --oss
+    │   │   └── implementer.toml  gpt-6-sol
     │   └── skills
     │       └── README.md
     └── cursor

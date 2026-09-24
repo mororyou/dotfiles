@@ -271,6 +271,17 @@ task_id: DEV-1622
 読むもの: task.md, architecture.md
 ```
 
+各ツールにはラッパー（サブエージェント定義）があり、役割ファイルを読む指示は既に含まれている。ラッパー経由で起動する場合は Memory Context 以降だけ渡せばよい。
+
+| Role | 起動方法 | 定義ファイル |
+|---|---|---|
+| Researcher | Codex `researcher`（Qwen なら `codex --oss --local-provider lmstudio`） | `~/.codex/agents/researcher.toml` |
+| Architect | Claude Code / Cursor サブエージェント `architect` | `~/.claude/agents/architect.md` |
+| Implementer | Codex `implementer` | `~/.codex/agents/implementer.toml` |
+| Reviewer | Claude Code / Cursor サブエージェント `reviewer` | `~/.claude/agents/reviewer.md` |
+
+Cursor は `~/.claude/agents/` と `~/.codex/agents/` を互換パスとして読むので、Cursor 内から `/architect` `/reviewer` のように呼べる。
+
 渡さないもの:
 
 - 巨大な Conversation Context
