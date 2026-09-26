@@ -19,6 +19,7 @@
     │   ├── agents  サブエージェント定義（_shared/agents の本体を参照する薄いラッパー）
     │   │   ├── architect.md   model: fable
     │   │   └── reviewer.md    model: fable
+    │   ├── mcp.json.example  obsidian MCP（Shared Memory）の設定例
     │   └── skills
     │       ├── README.md
     │       └── shared -> ../../_shared/skills
@@ -26,10 +27,11 @@
     │   ├── agents  カスタムエージェント定義（同上）
     │   │   ├── researcher.toml   gpt-6-luna / Qwen は --oss
     │   │   └── implementer.toml  gpt-6-sol
+    │   ├── mcp.example.toml  obsidian MCP の設定例（~/.codex/config.toml に追記）
     │   └── skills
     │       └── README.md
     └── cursor
-        ├── agents
+        ├── mcp.json.example  obsidian MCP の設定例（~/.cursor/mcp.json）
         └── skills
             └── README.md
 ```
