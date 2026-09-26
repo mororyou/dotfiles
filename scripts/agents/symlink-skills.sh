@@ -4,9 +4,22 @@
 SHARED_DIR="$HOME/dotfiles/agents/_shared"
 TARGET_DIR="$HOME/.agents"
 
-ln -sfn $SHARED_DIR/evals $TARGET_DIR/evals
-ln -sfn $SHARED_DIR/rules $TARGET_DIR/rules
-ln -sfn $SHARED_DIR/agents $TARGET_DIR/agents
+# link_dir <src> <dst>
+# dst が実ディレクトリ（symlink でない）なら上書きしない。
+# ln -sfn は dst が実ディレクトリだとその中に link を作ってしまうため。
+link_dir() {
+  if [ -d "$2" ] && [ ! -L "$2" ]; then
+    echo "skip: $2 is a real directory. Move its contents into $1 and remove it, then rerun."
+    return
+  fi
+  ln -sfn "$1" "$2"
+  echo "linked: $2"
+}
+
+mkdir -p "$TARGET_DIR"
+
+link_dir "$SHARED_DIR/rules"  "$TARGET_DIR/rules"
+link_dir "$SHARED_DIR/agents" "$TARGET_DIR/agents"
 
 mkdir -p "$TARGET_DIR/skills"
 
@@ -53,35 +66,18 @@ for skill in "$TARGET_DIR/skills"/*; do
   echo "linked (codex): $name"
 done
 
-# ~/.claude agents (Cursor も ~/.claude/agents を互換パスとして読む)
+# ~/.claude agents / ~/.codex agents
+# どちらもディレクトリごと symlink する（Codex はディレクトリ内のファイル symlink を辿らず
+# "agent type is currently not available" になる。Claude も揃えて同じ作りにする）。
+# Cursor は ~/.claude/agents と ~/.codex/agents を User-level subagents の互換パスとして読む（Cursor docs）ので、
+# ~/.cursor/agents へのリンクは不要
 echo "Symlinking claude agents..."
 
-CLAUDE_AGENTS="$HOME/.claude/agents"
+link_dir "$HOME/dotfiles/agents/claude/agents" "$HOME/.claude/agents"
 
-mkdir -p "$CLAUDE_AGENTS"
-
-for agent in "$HOME/dotfiles/agents/claude/agents"/*.md; do
-  [ -f "$agent" ] || continue
-
-  name="$(basename "$agent")"
-
-  ln -sfn "$agent" "$CLAUDE_AGENTS/$name"
-  echo "linked (claude agent): $name"
-done
-
-# ~/.codex agents (Cursor も ~/.codex/agents を互換パスとして読む)
-# Codex はディレクトリ内のファイル symlink を辿らない（"agent type is currently not available" になる）ので、
-# ファイル単位ではなくディレクトリごと symlink する
 echo "Symlinking codex agents..."
 
-CODEX_AGENTS="$HOME/.codex/agents"
-
-if [ -d "$CODEX_AGENTS" ] && [ ! -L "$CODEX_AGENTS" ]; then
-  echo "skip (codex agents): $CODEX_AGENTS is a real directory. Move its contents into dotfiles/agents/codex/agents and remove it, then rerun."
-else
-  ln -sfn "$HOME/dotfiles/agents/codex/agents" "$CODEX_AGENTS"
-  echo "linked (codex agents dir): $CODEX_AGENTS"
-fi
+link_dir "$HOME/dotfiles/agents/codex/agents" "$HOME/.codex/agents"
 
 # ~/.cursor skills
 echo "Symlinking cursor skills..."
