@@ -15,13 +15,13 @@ Orchestrator は Cursor 本体が担い、複数の AI Agent に役割分担さ�
 
 ## 1. Team
 
-| Role | Model / Tool | Responsibility | Output |
-|---|---|---|---|
-| 🎛️ Orchestrator | Cursor | タスク管理・Agent 選択・Handoff | `task.md` |
-| 🔎 Researcher | Luna / Qwen3-Coder-Next | コードベース調査 | `research.md` |
-| 🧠 Architect | Fable | 設計・Implementation Plan | `architecture.md` |
-| 🔨 Implementer | Codex | 実装・テスト | `implementation.md` |
-| 🔍 Reviewer | Fable | 独立レビュー | `review.md` |
+| Role | Tool | Model | Responsibility | Output |
+|---|---|---|---|---|
+| 🎛️ Orchestrator | Cursor | — | タスク管理・Agent 選択・Handoff | `task.md` |
+| 🔎 Researcher | Codex | `gpt-6-luna`（ローカル時 Qwen3-Coder-Next） | コードベース調査 | `research.md` |
+| 🧠 Architect | Claude Code | `fable` | 設計・Implementation Plan | `architecture.md` |
+| 🔨 Implementer | Codex | `gpt-6-sol` | 実装・テスト | `implementation.md` |
+| 🔍 Reviewer | Claude Code | `fable` | 独立レビュー | `review.md` |
 
 各 Agent の振る舞いは `~/.agents/agents/{role}.md` に定義されている。
 すべてのタスクで全 Agent を利用する必要はない。
@@ -152,6 +152,25 @@ Implementer          Orchestrator → Human
 
 Agent 間の Shared Memory には Obsidian を利用する。プロダクトごとに Memory を分離する。
 
+### Pre-flight（タスク開始前に Orchestrator が 1 回だけ実行）
+
+1. Obsidian が起動しているか: `vault_list Works/{product}/tasks/` が返ること
+2. Codex Agent から書けるか（初回のみ）:
+
+   ```bash
+   codex exec "Have the researcher agent write 'ping' to Works/_preflight/ping.md via obsidian MCP and report the result"
+   ```
+
+   ファイルができなければ下の fallback に切り替える。Implementer（`workspace-write`）も同じ検証を 1 回通す
+3. Codex 側に obsidian MCP が登録されているか: `codex mcp list` に `obsidian` があること。無ければ `agents/codex/mcp.example.toml` を参照して追加する
+
+**fallback（MCP が sandbox で通らなかった場合）**
+read-only Agent（Researcher / Reviewer）は Vault に書かず、Output Format 通りの本文を最終メッセージで返し、Orchestrator が `vault_write` する。その場合、該当 Agent の Shared Memory Protocol の「書く」を次に差し替える。
+
+```markdown
+- 書く: `research.md` の本文を Output Format 通りに最終メッセージで返す（Vault への保存は Orchestrator が行う）
+```
+
 ```text
 Works/
 └── {product}/
@@ -171,13 +190,12 @@ Works/
 
 ### アクセス方法
 
-1. **obsidian MCP を優先する**: `vault_read` / `vault_write` / `vault_append` / `vault_patch` / `vault_list`
-2. MCP が使えない環境では `obsidian` スキル経由で読み書きする。その際、スキルの装飾ルール（wikilink・コールアウト・Mermaid・要約コールアウトなど）は適用せず、各 Agent の Output Format テンプレートをそのまま本文にする。`--type work` を使い、追記は `--append` で行う
-3. Agent 自身に Vault の絶対パスや操作方法を持たせない
+1. obsidian MCP（`vault_read` / `vault_write` / `vault_append` / `vault_list`）のみ。MCP が使えない場合、Agent は作業を止めて Orchestrator に「MCP unavailable」と報告する（スキルやファイル直接操作で代替しない）
+2. Agent 自身に Vault の絶対パスや操作方法を持たせない
 
 ### タスクディレクトリの作成
 
-- `{product_memory_root}/tasks/{task_id}/` は、Orchestrator が `task.md` を書くときに作る（`vault_write` は親ディレクトリを自動作成する。作成されなかった場合は `obsidian` スキル経由で作る）
+- `{product_memory_root}/tasks/{task_id}/` は、Orchestrator が `task.md` を書くときに作る（`vault_write` は親ディレクトリを自動作成する）
 - `{task_id}` はチケット ID（例: `DEV-1622`）を使う。チケットが無い場合は `YYYYMMDD-{短い slug}`（例: `20260925-fix-login-redirect`）
 
 ### Memory Context
@@ -187,9 +205,10 @@ Agent には Obsidian の絶対パスをハードコードしない。Handoff �
 ```text
 product_memory_root: Works/{product}
 task_id: {task_id}
+route: Simple | Bug | Feature | Architecture Change
 ```
 
-Agent は `{product_memory_root}/tasks/{task_id}/research.md` のように扱う。
+Agent は `{product_memory_root}/tasks/{task_id}/research.md` のように扱う。`route` で `architecture.md` の有無を判断する。
 
 ### task.md
 
@@ -256,10 +275,9 @@ Memory と Repository が矛盾する場合は Repository を確認する。古�
 Agent を起動するときは、次を渡す。
 
 1. **役割定義のパス**: `~/.agents/agents/{role}.md`。「まずこれを読み、この役割として振る舞う」と明示する
-2. **Memory Context**: `product_memory_root` / `task_id`
+2. **Memory Context**: `product_memory_root` / `task_id` / `route`（`architecture.md` の有無を Agent が判断できるように）
 3. **読むべき Artifact の名前**: 役割定義の Input に従う。差し戻しの場合は `review.md` / `implementation.md` も含める
-4. **経路**: Simple / Bug / Feature / Architecture Change のどれか（`architecture.md` の有無を Agent が判断できるように）
-5. タスク固有の補足があれば最小限の要約
+4. タスク固有の補足があれば最小限の要約
 
 起動プロンプトの例:
 
@@ -267,22 +285,32 @@ Agent を起動するときは、次を渡す。
 ~/.agents/agents/implementer.md を読み、Implementer として振る舞ってください。
 product_memory_root: Works/1D
 task_id: DEV-1622
-経路: Feature
-読むもの: task.md, architecture.md
+route: Feature
+read: task.md, architecture.md
 ```
 
 各ツールにはラッパー（サブエージェント定義）があり、役割ファイルを読む指示は既に含まれている。ラッパー経由で起動する場合は Memory Context 以降だけ渡せばよい。
 
 | Role | 起動方法 | 定義ファイル |
 |---|---|---|
-| Researcher | Codex に「`researcher` に〜させて」と指示（Qwen なら `codex --oss --local-provider lmstudio`） | `~/.codex/agents/researcher.toml` |
-| Architect | Claude Code / Cursor サブエージェント `architect` | `~/.claude/agents/architect.md` |
-| Implementer | Codex に「`implementer` に〜させて」と指示 | `~/.codex/agents/implementer.toml` |
-| Reviewer | Claude Code / Cursor サブエージェント `reviewer` | `~/.claude/agents/reviewer.md` |
+| Researcher | Cursor の terminal から `codex exec`（下記）。Qwen の場合は `codex --oss --local-provider lmstudio exec ...` | `~/.codex/agents/researcher.toml` |
+| Architect | Cursor サブエージェント `/architect` | `~/.claude/agents/architect.md` |
+| Implementer | Cursor の terminal から `codex exec`（下記） | `~/.codex/agents/implementer.toml` |
+| Reviewer | Cursor サブエージェント `/reviewer` | `~/.claude/agents/reviewer.md` |
+
+`codex exec` のテンプレート（Orchestrator はこれを埋めて実行する）:
+
+```bash
+codex exec "Have the {role} agent run with:
+product_memory_root: Works/{product}
+task_id: {task_id}
+route: {route}
+read: {artifacts}"
+```
 
 - Codex のカスタムエージェントは一覧コマンドが無く、プロンプトで名前を指定すると Codex 本体が spawn する。`/agent` は spawn 後のスレッド切り替え用
-  - 非対話の例: `codex exec "Have the researcher agent ... product_memory_root: Works/1D, task_id: DEV-1622, 経路: Feature"`
-- Cursor は `~/.claude/agents/` と `~/.codex/agents/` を互換パスとして読むので、Cursor 内から `/architect` `/reviewer` のように呼べる
+- Cursor は `~/.claude/agents/` を User-level subagents の互換パスとして読む（Cursor docs）ので、`/architect` `/reviewer` は Claude 用ラッパーがそのまま使える。Codex のモデル（`gpt-6-luna` / `gpt-6-sol`）を Cursor 内で使えることは保証されないので、Codex 役は必ず `codex exec` で起動する
+- `/architect` `/reviewer` が Cursor から見えない場合は Claude Code（`claude -p`）で同じ prompt を投げる
 
 渡さないもの:
 
