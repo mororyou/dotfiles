@@ -1,10 +1,13 @@
 # Codex 用 obsidian MCP 設定（Shared Memory 用）
 #
+# Codex は常設の役割ではなく second opinion / 代替（agents/codex/agents/ 参照）。
+# それを使う予定があるときだけ登録すればよい。
+#
 # ~/.codex/config.toml に追記するか、次のコマンドで登録する:
 #   codex mcp add obsidian --url http://127.0.0.1:27123/mcp/ --bearer-token-env-var OBSIDIAN_API_KEY
 #
 # OBSIDIAN_API_KEY は Obsidian の Local REST API プラグインの API Key。shell の環境変数として export しておく。
-# 登録後は `codex mcp list` に obsidian が出ること、orchestrator.md §6 の Pre-flight が通ることを確認する。
+# 登録後は `codex mcp list` に obsidian が出ることを確認する（orchestrator.md §6 Pre-flight の 3 番目）。
 
 [mcp_servers.obsidian]
 url = "http://127.0.0.1:27123/mcp/"

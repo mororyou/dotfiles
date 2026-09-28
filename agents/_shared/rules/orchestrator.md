@@ -1,15 +1,17 @@
 # 🎛️ Orchestrator Rules
 
 AI Development Team v0.1 の Orchestrator として振る舞うためのルール。
-Orchestrator は Cursor 本体が担い、複数の AI Agent に役割分担させて開発タスクを 1 件完走させる。
+Orchestrator は Orca のターミナル内で起動した Claude Code が担い、Orca orchestration を使って複数の AI Agent（worker）に役割分担させ、開発タスクを 1 件完走させる。
+Orca の用語では coordinator。本書では Orchestrator と呼ぶ。
 
 - 主な問い: **次に誰が何をするべきか？**
 - 原則: **まず動かす。** 完全自動化・大量 Agent・Cloud・複雑な並列実行を目指さない。
+- 入口: `~/.agents/skills/coordinate/`（`coordinate` スキル）。Pre-flight・JIRA の読み方・Orca での起動手順はそちらにあり、本書は方針だけを持つ
 
 > **適用範囲**
-> このルールは Orchestrator（Cursor）として振る舞うときだけ有効。
+> このルールは Orchestrator として振る舞うときだけ有効。
 > `~/.agents/agents/{role}.md` のいずれかの役割で起動された場合は、その役割定義に従い、本ルールは適用しない。
-> Agent は自分でルーティングしたり Human へ直接報告したりせず、必ず Orchestrator に返す。
+> Agent は自分でルーティングしたり Human へ直接報告したりせず、必ず Orchestrator に返す（Orca では `worker_done` / `ask`）。
 
 ---
 
@@ -157,6 +159,8 @@ Agent 間の Shared Memory には Obsidian を利用する。プロダクトご�
 
 ### Pre-flight（タスク開始前に Orchestrator が 1 回だけ実行）
 
+手順は `coordinate` スキルの §0 に従う（Orca runtime・orchestration ガイド・Obsidian・JIRA の疎通）。Shared Memory に関わる要点だけ書く。
+
 1. Obsidian が起動しているか: `vault_list Works/{product}/tasks/` が返ること
 2. Claude Code に obsidian MCP が登録されているか: `claude mcp list` に `obsidian` があること。無ければ `agents/claude/mcp.json.example` を参照して追加する。Orchestrator も worker も同じ Claude Code を使うので、Orchestrator 自身の `vault_list` が通れば worker からも通る
 3. second opinion で Codex を使う予定があるときだけ: `codex mcp list` に `obsidian` があること（`agents/codex/mcp.example.toml`）
@@ -235,7 +239,7 @@ Clarifying | Researching | Designing | Awaiting Human | Implementing | Reviewing
 - review.md:
 
 ## Log
-Handoff・差し戻し・Human 確認の履歴。日時と一言。
+Handoff・差し戻し・Human 確認の履歴。日時と一言。Orca の Run ID と各 Dispatch ID もここに残す。
 ```
 
 Status の意味:
@@ -269,47 +273,36 @@ Memory と Repository が矛盾する場合は Repository を確認する。古�
 
 ## 7. Agent Handoff
 
-> Orca 上で動かす場合、この節の「起動方法」は `~/.agents/skills/coordinate/references/orca-handoff.md` で置き換える（全役割を `--agent claude` のサブエージェント経由で起動する）。以下の `codex exec` / Cursor サブエージェントの記述は Cursor を Orchestrator にしていたときのもの。
+Agent は Orca の worker として起動する。1 タスク = 1 Run、1 役割の 1 回の仕事 = 1 Task + 1 Dispatch。
+コマンドの組み方・待ち方・後始末は `~/.agents/skills/coordinate/references/orca-handoff.md` に従い、フラグは `orca skills get orchestration --full` を正とする。ここでは何を渡し、何を守るかだけ書く。
 
-Agent を起動するときは、次を渡す。
+Agent を起動するとき、Task spec に次を渡す。
 
-1. **役割定義のパス**: `~/.agents/agents/{role}.md`。「まずこれを読み、この役割として振る舞う」と明示する
+1. **役割への委譲**: 「`{role}` サブエージェントに委譲してください」。wrapper `~/.claude/agents/{role}.md` が `~/.agents/agents/{role}.md` を読む指示と read-only ガード（`disallowedTools`）を持っているので、トップレベルの Claude に直接役割を演じさせない
 2. **Memory Context**: `product_memory_root` / `task_id` / `route`（`architecture.md` の有無を Agent が判断できるように）
 3. **読むべき Artifact の名前**: 役割定義の Input に従う。差し戻しの場合は `review.md` / `implementation.md` も含める
-4. タスク固有の補足があれば最小限の要約
+4. **`worker_done` の body に書いてほしいこと**: Artifact の Vault パスと、役割ごとの要約（Summary / Proposed Design と Human 確認の要否 / Verification と Plan Deviations / Verdict と戻し先）
+5. タスク固有の補足があれば最小限の要約
 
-起動プロンプトの例:
+Task spec の例:
 
 ```text
-~/.agents/agents/implementer.md を読み、Implementer として振る舞ってください。
+この作業は `implementer` サブエージェントに委譲してください。サブエージェントはまず ~/.agents/agents/implementer.md を読み、Implementer として振る舞います。
 product_memory_root: Works/1D
 task_id: DEV-1622
 route: Feature
 read: task.md, architecture.md
+完了したら worker_done の body に implementation.md の Vault パス、Verification の結果、Plan Deviations の有無を書いてください。
+obsidian MCP が使えない場合は作業を止め、ask で「MCP unavailable」と伝えてください。
 ```
 
-各ツールにはラッパー（サブエージェント定義）があり、役割ファイルを読む指示は既に含まれている。ラッパー経由で起動する場合は Memory Context 以降だけ渡せばよい。
+起動時の決め:
 
-| Role | 起動方法 | 定義ファイル |
-|---|---|---|
-| Researcher | Cursor の terminal から `codex exec`（下記）。Qwen の場合は `codex --oss --local-provider lmstudio exec ...` | `~/.codex/agents/researcher.toml` |
-| Architect | Cursor サブエージェント `/architect` | `~/.claude/agents/architect.md` |
-| Implementer | Cursor の terminal から `codex exec`（下記） | `~/.codex/agents/implementer.toml` |
-| Reviewer | Cursor サブエージェント `/reviewer` | `~/.claude/agents/reviewer.md` |
-
-`codex exec` のテンプレート（Orchestrator はこれを埋めて実行する）:
-
-```bash
-codex exec "Have the {role} agent run with:
-product_memory_root: Works/{product}
-task_id: {task_id}
-route: {route}
-read: {artifacts}"
-```
-
-- Codex のカスタムエージェントは一覧コマンドが無く、プロンプトで名前を指定すると Codex 本体が spawn する。`/agent` は spawn 後のスレッド切り替え用
-- Cursor は `~/.claude/agents/` を User-level subagents の互換パスとして読む（Cursor docs）ので、`/architect` `/reviewer` は Claude 用ラッパーがそのまま使える。Codex のモデル（`gpt-6-luna` / `gpt-6-sol`）を Cursor 内で使えることは保証されないので、Codex 役は必ず `codex exec` で起動する
-- `/architect` `/reviewer` が Cursor から見えない場合は Claude Code（`claude -p`）で同じ prompt を投げる
+- 全役割 `--agent claude`。`--model` / `--effort` は `~/.agents/agents/{role}.md` の Model 行から
+- 全 worker `--worktree current`。Implementer の未 commit 差分を Reviewer が同じ場所で見るため
+- 逐次に起動する。前の Artifact を Orchestrator が `vault_read` で確認してから次の Task を作る（`--deps` で DAG にしない）
+- read-only の役割（Researcher / Architect / Reviewer）の `worker_done` 後は `git status --porcelain` を起動前と比べ、worker が書き換えていないことを確かめる
+- Codex の second opinion は常設経路に入れない。Architecture Change・Critical 後の再レビュー・Human の要望のときだけ追加で起こす
 
 渡さないもの:
 
@@ -323,7 +316,7 @@ task.md → Researcher → research.md → Architect → architecture.md
         → Implementer → implementation.md → Reviewer → review.md
 ```
 
-Handoff のたびに `task.md` の Status と Artifact links を更新する。
+Handoff のたびに `task.md` の Status と Artifact links を更新し、Run ID と Dispatch ID を Log に残す。`task.md` が人間向けの正で、Orca の Task / Dispatch はランタイム状態。
 
 ---
 
@@ -347,6 +340,7 @@ Reviewer 以外からの差し戻しも Orchestrator 経由で扱う。
 | Architect | `research.md` に無い事実が必要 | Researcher（追加調査）→ Architect |
 
 差し戻しのたびに `review.md` / `implementation.md` / `architecture.md` は **上書きせずラウンドを追記**する。Verdict や検証結果は常に最新ラウンドのものを見る。
+Orca 側では戻し先の役割で**新しい Task を作って** `worker-start` する。前の Dispatch を蘇生させない（Round の概念は Vault 側にあり、Orca の Task は 1 attempt の単位）。
 
 **同じ Finding を無限に往復させない。** 同じ Finding ID（`R1-3` など。Reviewer が前ラウンドから引き継ぐ）が 3 回目の review.md にも未解消で残ったら、Orchestrator が止めて Human へ戻す。
 
@@ -382,8 +376,9 @@ v0.1 では自動化しない。Orchestrator または Human が必要性を判�
 
 ## 11. v0.1 でやらないこと
 
-- Cloud Agent（Cursor Cloud / Codex Cloud）
-- Human の確認なしに長時間自律実行する仕組み
+- Cloud Agent・リモート worker（Orca の `--on` を含む）
+- Human の確認ポイント（Architecture Change、`NEEDS_CLARIFICATION`、3 ラウンド往復）を飛ばして自律実行する仕組み。`check --wait` で worker を待つこと自体は長時間でもよい
 - Frontend / Backend / DB / Security などへの Agent 細分化
-- Git worktree を使った複数 Implementer の並列実装
+- 複数 Implementer の並列実装。Orca の worktree 分離は使わず、全 worker を current worktree に置く
+- `task-create --deps` による DAG 実行。Orchestrator が Artifact を確認してから次を起こす逐次で回す
 - Task Memory から Long-term Knowledge への自動昇格

@@ -110,3 +110,4 @@ research.md のうち設計判断の根拠にした部分。
 - アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_append`）のみ。MCP が使えない場合は作業を止めて Orchestrator に「MCP unavailable」と報告する（スキルやファイル直接操作で代替しない）
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `architecture.md` のパス・Proposed Design の要約・Human 確認が必要かどうかを報告する
+- 報告の手段は起動プロンプトの指示に従う。Orca 上ではサブエージェントとして起動されるので、上記と「Human 確認が必要」「Researcher の追加調査が必要」「MCP unavailable」は**最終メッセージで返す**。`worker_done` / `ask` の送信は、それを受け取ったトップレベルの Claude（worker 本体）が行う。自分で `orca orchestration send` を打たない

@@ -69,8 +69,9 @@ done
 # ~/.claude agents / ~/.codex agents
 # どちらもディレクトリごと symlink する（Codex はディレクトリ内のファイル symlink を辿らず
 # "agent type is currently not available" になる。Claude も揃えて同じ作りにする）。
-# Cursor は ~/.claude/agents と ~/.codex/agents を User-level subagents の互換パスとして読む（Cursor docs）ので、
-# ~/.cursor/agents へのリンクは不要
+# 常設の全役割は ~/.claude/agents（Orca 上の Claude Code worker がサブエージェントとして読む）。
+# ~/.codex/agents は second opinion / 代替用。Orchestrator は ~/.claude/skills/coordinate から入るので
+# ~/.cursor/agents へのリンクは不要（Cursor は Orchestrator ではなくなった）
 echo "Symlinking claude agents..."
 
 link_dir "$HOME/dotfiles/agents/claude/agents" "$HOME/.claude/agents"

@@ -15,7 +15,7 @@ JIRA と Orca に接続するだけに留める。ルールを書き写さない
 | 項目 | 値 |
 |---|---|
 | 実行環境 | Orca のターミナル内で起動した Claude Code（Coordinator） |
-| ルール | `~/.agents/rules/orchestrator.md`（§4〜§10 が本体。§7 の起動方法は Cursor 前提なので `references/orca-handoff.md` で置き換える） |
+| ルール | `~/.agents/rules/orchestrator.md`（方針。§7 は何を渡すかまでで、コマンドの組み方は `references/orca-handoff.md`） |
 | 役割定義 | `~/.agents/agents/{researcher,architect,implementer,reviewer}.md` |
 | Shared Memory | Obsidian（obsidian MCP `vault_list` / `vault_read` / `vault_write` / `vault_append`） |
 | Worker 起動 | `orca orchestration`（`orca skills get orchestration --full` が版一致の正） |
@@ -75,14 +75,15 @@ Context には JIRA の URL とリンク先チケットを書く。経路は §4
 
 ### 6. Orca で worker を回す
 
-ここから先は `orchestrator.md` §4〜§10 に従う。ただし **worker の起動・監督・差し戻しの手順は
-`references/orca-handoff.md` を読んで置き換える**（§7 の `codex exec` / Cursor サブエージェントは使わない）。
+ここから先は `orchestrator.md` §4〜§10 に従う。**worker の起動・監督・差し戻しのコマンドの組み方は
+`references/orca-handoff.md` を読む**（§7 は何を渡すかの方針、こちらが手順）。
 
 要点:
 
 - Run を 1 つ作り、役割ごとに Task を作って `worker-start` する。全 worker を `--worktree current` に置く
 - `check --wait` で `worker_done` を待つ。タイムアウトは失敗ではない
-- `worker_done` を受けたら Artifact を `vault_read` して自分の目で確認し、`task.md` の Status / Artifact links / Log を更新してから次の worker を起動する
+- `worker_done` を受けたら Artifact を `vault_read` して自分の目で確認し、`task.md` の Status / Artifact links / Log（Run / Dispatch ID）を更新してから次の worker を起動する
+- worker 本体はトップレベルの Claude で、役割はその中のサブエージェントが演じる。`worker_done` / `ask` を送るのは worker 本体で、サブエージェントは最終メッセージで返すだけ
 - Reviewer の Verdict と差し戻しは §8 のとおり。同じ Finding ID が 3 ラウンド残ったら止めて Human へ
 
 ### 7. 完了報告

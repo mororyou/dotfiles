@@ -116,3 +116,4 @@ architecture.md から逸脱した点と理由。無ければ「なし」。arch
 - アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_append`）のみ。MCP が使えない場合は作業を止めて Orchestrator に「MCP unavailable」と報告する（スキルやファイル直接操作で代替しない）
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `implementation.md` のパス・検証結果・Plan Deviations の有無を報告する
+- 報告の手段は起動プロンプトの指示に従う。Orca 上ではサブエージェントとして起動されるので、上記と「Plan に問題がある」「スコープを超える」「MCP unavailable」は**最終メッセージで返す**。検証が通らなかったときは最終メッセージの先頭で失敗と明示する（トップレベルの Claude が `worker_done --outcome failed` に写す）。`worker_done` / `ask` の送信はトップレベルの Claude（worker 本体）が行う。自分で `orca orchestration send` を打たない

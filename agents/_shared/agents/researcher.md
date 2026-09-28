@@ -92,3 +92,4 @@ Shared Memory から読むもの:
 - アクセス方法: obsidian MCP（`vault_list` / `vault_read` / `vault_write`）のみ。MCP が使えない場合は作業を止めて Orchestrator に「MCP unavailable」と報告する（スキルやファイル直接操作で代替しない）
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `research.md` のパスと Summary を報告する
+- 報告の手段は起動プロンプトの指示に従う。Orca 上ではサブエージェントとして起動されるので、上記を**最終メッセージで返す**。`worker_done` の送信や「MCP unavailable」の `ask` は、それを受け取ったトップレベルの Claude（worker 本体）が行う。自分で `orca orchestration send` を打たない

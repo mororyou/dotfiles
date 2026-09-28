@@ -139,3 +139,4 @@ CHANGES_REQUESTED の場合: 戻し先（Implementer / Architect）
 - アクセス方法: obsidian MCP（`vault_read` / `vault_write` / `vault_append`）のみ。MCP が使えない場合は作業を止めて Orchestrator に「MCP unavailable」と報告する（スキルやファイル直接操作で代替しない）
 - Vault の絶対パスをハードコードしない。必ず `{product_memory_root}` からの相対で扱う
 - 完了したら Orchestrator に `review.md` のパス・Verdict・戻し先を報告する
+- 報告の手段は起動プロンプトの指示に従う。Orca 上ではサブエージェントとして起動されるので、上記と「MCP unavailable」は**最終メッセージで返す**。`CHANGES_REQUESTED` はレビューとしては成功（失敗ではない）。`worker_done` / `ask` の送信はトップレベルの Claude（worker 本体）が行う。自分で `orca orchestration send` を打たない

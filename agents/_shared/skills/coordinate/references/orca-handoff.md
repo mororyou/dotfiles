@@ -1,8 +1,8 @@
 # Orca での Agent Handoff
 
-`orchestrator.md` §7 は Cursor サブエージェントと `codex exec` を前提に書かれている。Orca 上では
-この文書の手順で置き換える。**何を渡すか**（役割定義のパス・Memory Context・読む Artifact）は §7 のまま、
-**どう起動し、どう完了を受け取るか**だけが変わる。
+`orchestrator.md` §7 は**何を渡し、何を守るか**（サブエージェントへの委譲・Memory Context・読む Artifact・
+`worker_done` に書くこと・起動時の決め）を持つ。この文書はその実行手順で、**どう起動し、どう待ち、
+どう後始末するか**を Orca のコマンド単位で書く。方針が食い違ったら §7 を正とする。
 
 コマンドのフラグはこの文書ではなく `orca skills get orchestration --full` を正とする。Orca は版ごとに
 コマンドが変わり、ここに写したものは古くなる。以下は「何をどの順で呼ぶか」の骨格。
@@ -76,11 +76,15 @@ task_id: {task_id}
 route: {Simple | Bug | Feature | Architecture Change}
 read: {task.md, requirements.md, ...}
 
-完了したら worker_done の body に次を書いてください:
+サブエージェントの最終メッセージを受け取ったら、その内容を worker_done の body に転記してください:
 - {artifact}.md の Vault パス
 - {Researcher: Summary / Architect: Proposed Design の要約と Human 確認の要否 / Implementer: Verification の結果と Plan Deviations の有無 / Reviewer: Verdict と戻し先}
-obsidian MCP が使えない場合は作業を止め、ask で「MCP unavailable」と伝えてください。
+サブエージェントが「MCP unavailable」「Plan に問題がある」「Human 確認が必要」などブロッキングな報告を返したら、worker_done ではなく ask で伝えてください。
+Implementer が検証失敗を報告したら worker_done は --outcome failed にしてください。Reviewer の CHANGES_REQUESTED は成功です。
 ```
+
+`worker_done` / `ask` を送るのはトップレベルの Claude（Orca の preamble を受けた worker 本体）で、サブエージェントは最終メッセージで返すだけ。
+役割定義の Shared Memory Protocol にもその旨を書いてあるので、spec 側はトップレベル向けの転記指示だけでよい。
 
 差し戻しのときは `read:` に `review.md`（Implementer へ）または `review.md, implementation.md`（Architect へ）を足し、
 「Round {n} を末尾に追記する」ことを一言添える（上書き禁止は役割定義にあるが、念押しが安い）。
