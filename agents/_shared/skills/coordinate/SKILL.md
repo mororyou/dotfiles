@@ -31,8 +31,15 @@ JIRA と Orca に接続するだけに留める。ルールを書き写さない
 1. `orca` CLI を解決する: `ORCA_CLI_COMMAND` → `orca` → `/Applications/Orca.app/Contents/Resources/bin/orca`
 2. `orca status --json` の `ok` が true。`runtime_access_denied` ならサンドボックス外で再実行が必要
 3. `orca skills get orchestration --full` を読む。コマンド仕様はここが正で、このスキルや記憶にあるフラグを使わない
-4. `vault_list Works/` が返る（Obsidian が起動している）
-5. JIRA を読む手段があるか。チケット ID 起点でない場合はこの確認を飛ばす
+4. `vault_list Works/` が返る（Obsidian が起動している）。`Works/{product}/` はまだ無くてよい
+5. 作業ルートが合っている: `git rev-parse --show-toplevel` が、これから触るリポジトリのルートであること。
+   worker は全て `--worktree current` でこのディレクトリを継承するので、ここがずれると全役割がずれる。
+   空のサブディレクトリやモノレポの親で起動していないか、`product` との対応を 1 行でユーザーに確認する
+6. **worker から Obsidian に書けるか**（環境を変えた後の初回だけ）。Orchestrator の `vault_list` が通っても、
+   Orca が起こす worker → その中のサブエージェントまで MCP ツールが継承されているかは別。
+   `researcher` サブエージェントに `Works/_preflight/ping.md` へ `vault_write` させる Task を 1 つ起こし、
+   書けたことを Orchestrator が `vault_read` で確かめる。書けなければ `references/orca-handoff.md` の fallback 版で進める
+7. JIRA を読む手段があるか。チケット ID 起点でない場合はこの確認を飛ばす
 
 ### 1. ルールを読む
 

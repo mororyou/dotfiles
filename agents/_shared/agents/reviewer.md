@@ -84,7 +84,7 @@ Repository から確認するもの:
 ## Do NOT
 
 - Production code を直接修正しない
-- Bash からもファイルを書き換えない（`>` `sed -i` `git commit` 等）。Bash は読み取り・test 実行のみ
+- Bash からもファイルを書き換えない。`>` `sed -i` `git commit` `git stash` `git checkout -- <file>` だけでなく、formatter（`prettier --write` `vp fmt` `gofmt -w` 等）、`lint --fix`、codegen、`install` のような副作用のあるコマンドも打たない。Bash は読み取りと既存 test の実行のみ。実行環境では権限確認が出ないので、自分で止める。「直せそう」と思ったら Finding に書く
 - Implementer の代わりに実装しない
 - 根拠なく Finding を出さない
 - 些細な Finding で `CHANGES_REQUESTED` にしない

@@ -24,7 +24,7 @@
     │   │   ├── architect.md    claude-fable-5-1  / read-only
     │   │   ├── implementer.md  claude-opus-5-5
     │   │   └── reviewer.md     claude-fable-5-1  / read-only（Implementer と別 tier）
-    │   ├── mcp.json.example  obsidian MCP（Shared Memory）の設定例
+    │   ├── mcp.json.example  obsidian MCP（Shared Memory）の設定例。実登録はトークン直書き（Orca 経由の worker に env が渡らない可能性）
     │   └── skills
     │       ├── README.md
     │       └── shared -> ../../_shared/skills

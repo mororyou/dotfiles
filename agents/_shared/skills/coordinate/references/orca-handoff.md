@@ -89,6 +89,33 @@ Implementer が検証失敗を報告したら worker_done は --outcome failed �
 差し戻しのときは `read:` に `review.md`（Implementer へ）または `review.md, implementation.md`（Architect へ）を足し、
 「Round {n} を末尾に追記する」ことを一言添える（上書き禁止は役割定義にあるが、念押しが安い）。
 
+### fallback 版（worker から obsidian MCP が通らないとき）
+
+最初の worker が「MCP unavailable」を `ask` で返してきたら、その Run の残りは全役割をこの形にする。
+途中で混ぜない（Reviewer だけ MCP、のような状態は `task.md` の Artifact links が嘘になる）。
+
+```text
+この作業は `{role}` サブエージェントに委譲してください。サブエージェントはまず ~/.agents/agents/{role}.md を読み、{Role} として振る舞います。
+
+Shared Memory Protocol の差し替え: obsidian MCP は使わない。読む Artifact は下に貼ってある。`{artifact}.md` は Output Format 通りの本文を最終メッセージで返す（Vault への保存は Orchestrator が行う）。
+
+product_memory_root: Works/{product}
+task_id: {task_id}
+route: {...}
+
+--- task.md ---
+{Orchestrator が vault_read した本文}
+--- {前の artifact}.md ---
+{同上}
+
+サブエージェントの最終メッセージ（{artifact}.md の本文全体）を、そのまま worker_done の body に入れてください。要約しないでください。
+Implementer が検証失敗を報告したら --outcome failed にしてください。
+```
+
+`worker_done` を受けたら Orchestrator が `vault_write` し、`task.md` の Log に「fallback: Orchestrator が保存」と残す。
+本文が長くて `worker_done` の body に収まらないときは、worker に `{task_id}-{artifact}.md` を Repository 外（`/tmp`）に書かせてパスを返させる。
+Repository に置かない（Reviewer の `git status` 比較に混ざる）。
+
 ## 1 タスクの流れ
 
 `--model` / `--effort` の値は例（2026-09 時点の役割定義）。実際は各 `~/.agents/agents/{role}.md` の Model 行を読んで埋める。

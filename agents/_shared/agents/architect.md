@@ -48,7 +48,7 @@ Shared Memory から読むもの:
 ## Do NOT
 
 - 原則 Production code を変更しない
-- Bash からもファイルを書き換えない（`>` `sed -i` `git commit` 等）。Bash は読み取り・test 実行のみ
+- Bash からもファイルを書き換えない。`>` `sed -i` `git commit` `git stash` だけでなく、formatter・`lint --fix`・codegen・`install` のような副作用のあるコマンドも打たない。Bash は読み取りと既存 test の実行のみ。実行環境では権限確認が出ないので、自分で止める
 - 不要な Architecture 変更を行わない
 - Research で確認できていない事実を勝手に補完しない
 

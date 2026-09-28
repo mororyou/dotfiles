@@ -161,15 +161,17 @@ Agent 間の Shared Memory には Obsidian を利用する。プロダクトご�
 
 手順は `coordinate` スキルの §0 に従う（Orca runtime・orchestration ガイド・Obsidian・JIRA の疎通）。Shared Memory に関わる要点だけ書く。
 
-1. Obsidian が起動しているか: `vault_list Works/{product}/tasks/` が返ること
-2. Claude Code に obsidian MCP が登録されているか: `claude mcp list` に `obsidian` があること。無ければ `agents/claude/mcp.json.example` を参照して追加する。Orchestrator も worker も同じ Claude Code を使うので、Orchestrator 自身の `vault_list` が通れば worker からも通る
-3. second opinion で Codex を使う予定があるときだけ: `codex mcp list` に `obsidian` があること（`agents/codex/mcp.example.toml`）
+1. Obsidian が起動しているか: `vault_list Works/` が返ること（`Works/{product}/tasks/` は新規 product では存在しない。`task.md` の `vault_write` が親を作る）
+2. Claude Code に obsidian MCP が登録されているか: `claude mcp list` に `obsidian` があること。無ければ `agents/claude/mcp.json.example` を参照して追加する。example は `${OBSIDIAN_API_KEY}` 参照だが、Orca が起こす worker にその環境変数が渡る保証はないので、実登録はトークン直書き（`claude mcp add --header "Authorization: Bearer <token>"`）にしておく
+3. **worker から書けるか**は Orchestrator の `vault_list` からは分からない（Orchestrator → Orca が起こす worker → その中のサブエージェント、と 3 段でツールが継承される必要がある）。環境を変えた後の初回は、coordinate スキル §0 の worker ping を通す
+4. second opinion で Codex を使う予定があるときだけ: `codex mcp list` に `obsidian` があること（`agents/codex/mcp.example.toml`）
 
 **fallback（worker から MCP が通らなかった場合）**
-read-only Agent（Researcher / Reviewer）は Vault に書かず、Output Format 通りの本文を最終メッセージで返し、Orchestrator が `vault_write` する。その場合、該当 Agent の Shared Memory Protocol の「書く」を次に差し替える。
+全役割共通。Agent は Vault に書かず、Output Format 通りの本文を最終メッセージで返し、Orchestrator が `vault_write` する。Implementer も同じ（コードは Repository に書き、`implementation.md` の本文だけ最終メッセージで返す）。Agent が読む側の Artifact は Orchestrator が `vault_read` して Task spec に貼る。
+役割定義の「MCP unavailable なら止める」はこの差し替えが無いときの既定。fallback を使うときは Task spec に次を明示する（手順は `orca-handoff.md`）。
 
 ```markdown
-- 書く: `research.md` の本文を Output Format 通りに最終メッセージで返す（Vault への保存は Orchestrator が行う）
+Shared Memory Protocol の差し替え: obsidian MCP は使わない。読む Artifact は本文を下に貼る。`{artifact}.md` は Output Format 通りの本文を最終メッセージで返す（Vault への保存は Orchestrator が行う）
 ```
 
 ```text

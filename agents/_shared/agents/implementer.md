@@ -60,6 +60,7 @@ Shared Memory から読むもの:
 - Architect の Plan を独断で大きく変えない
 - Plan にない範囲の Code を変更しない
 - 検証をスキップしない、結果を省略しない
+- 環境を直すことに時間を使わない。native binding・パッケージマネージャ・ツールチェーンの欠落など**環境起因**で検証が通らないときは、直す試みは 2 回まで。それでも通らなければ「検証不能」として、試したことと残った状態を Verification に書き、失敗として返す（Orchestrator が Human に環境の判断を仰ぐ）
 - Reviewer の役割（自分の実装の最終判定）を兼ねない
 
 ## Output Format
@@ -83,7 +84,7 @@ Shared Memory から読むもの:
 architecture.md から逸脱した点と理由。無ければ「なし」。architecture.md が無い経路では「対象外」。
 
 ### Verification
-実行したコマンドと結果。
+実行したコマンドと結果。環境起因で実行できなかった項目は「検証不能: {原因} / 試したこと: {2 回まで}」と書く。
 - Test:
 - Typecheck:
 - Lint:
@@ -98,6 +99,8 @@ architecture.md から逸脱した点と理由。無ければ「なし」。arch
 ### Diff Summary
 変更の要点。Reviewer が Git Diff を読む前の地図になるもの。
 差分の取得方法（例: `git diff` の working tree、ブランチ名、base commit）を必ず書く。
+新規ファイルは未追跡なので `git diff` に出ない。`git status --porcelain` で見える旨と一覧を書く。
+初回コミット前のリポジトリ（`git log` が空）では `git diff` 自体が空になるので、その旨と Files Changed を全件書く。
 
 ## Round 2
 （差し戻し対応時に追記。Round 1 と同じ節構成に、先頭で Review Response を加える）
