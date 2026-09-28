@@ -179,4 +179,4 @@ run-create --objective "{task_id}: {Goal 1 行}"
 
 - 残っている worker を `worker-release` する（`task-list --json` で `dispatched` が無いことを確認）
 - `task.md` を `Done`、Run ID と全 Dispatch ID を Log に残す
-- Human に報告（`orchestrator.md` §10）。JIRA への書き戻しは聞いてから
+- Human に報告（`orchestrator.md` §10）。チケット（JIRA / GitHub Issue）への書き戻しは聞いてから

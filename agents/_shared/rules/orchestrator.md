@@ -6,7 +6,7 @@ Orca の用語では coordinator。本書では Orchestrator と呼ぶ。
 
 - 主な問い: **次に誰が何をするべきか？**
 - 原則: **まず動かす。** 完全自動化・大量 Agent・Cloud・複雑な並列実行を目指さない。
-- 入口: `~/.agents/skills/oned-coordinate/`（`oned-coordinate` スキル。ONED の JIRA チケット専用）。Pre-flight・JIRA の読み方・Orca での起動手順はそちらにあり、本書は方針だけを持つ
+- 入口: `~/.agents/skills/oned-coordinate/`（JIRA、ONED 専用）または `~/.agents/skills/github-coordinate/`（GitHub Issue、プライベートリポジトリ向け）。Pre-flight・チケットの読み方・Orca での起動手順は各入口スキルにあり、本書は経路・成果物・差し戻しの方針だけを持つ
 
 > **適用範囲**
 > このルールは Orchestrator として振る舞うときだけ有効。
@@ -159,11 +159,11 @@ Agent 間の Shared Memory には Obsidian を利用する。プロダクトご�
 
 ### Pre-flight（タスク開始前に Orchestrator が 1 回だけ実行）
 
-手順は `oned-coordinate` スキルの §0 に従う（Orca runtime・orchestration ガイド・Obsidian・JIRA の疎通）。Shared Memory に関わる要点だけ書く。
+手順は使用する入口スキル（`oned-coordinate` または `github-coordinate`）の §0 に従う（Orca runtime・orchestration ガイド・Obsidian・チケットシステムの疎通）。Shared Memory に関わる要点だけ書く。
 
 1. Obsidian が起動しているか: `vault_list Works/` が返ること（`Works/{product}/tasks/` は新規 product では存在しない。`task.md` の `vault_write` が親を作る）
 2. Claude Code に obsidian MCP が登録されているか: `claude mcp list` に `obsidian` があること。無ければ `agents/claude/mcp.json.example` を参照して追加する。example は `${OBSIDIAN_API_KEY}` 参照だが、Orca が起こす worker にその環境変数が渡る保証はないので、実登録はトークン直書き（`claude mcp add --header "Authorization: Bearer <token>"`）にしておく
-3. **worker から書けるか**は Orchestrator の `vault_list` からは分からない（Orchestrator → Orca が起こす worker → その中のサブエージェント、と 3 段でツールが継承される必要がある）。環境を変えた後の初回は、oned-coordinate スキル §0 の worker ping を通す
+3. **worker から書けるか**は Orchestrator の `vault_list` からは分からない（Orchestrator → Orca が起こす worker → その中のサブエージェント、と 3 段でツールが継承される必要がある）。環境を変えた後の初回は、使用する入口スキル §0 の worker ping を通す
 4. second opinion で Codex を使う予定があるときだけ: `codex mcp list` に `obsidian` があること（`agents/codex/mcp.example.toml`）
 
 **fallback（worker から MCP が通らなかった場合）**
@@ -276,7 +276,7 @@ Memory と Repository が矛盾する場合は Repository を確認する。古�
 ## 7. Agent Handoff
 
 Agent は Orca の worker として起動する。1 タスク = 1 Run、1 役割の 1 回の仕事 = 1 Task + 1 Dispatch。
-コマンドの組み方・待ち方・後始末は `~/.agents/skills/oned-coordinate/references/orca-handoff.md` に従い、フラグは `orca skills get orchestration --full` を正とする。ここでは何を渡し、何を守るかだけ書く。
+コマンドの組み方・待ち方・後始末は `~/.agents/rules/references/orca-handoff.md` に従い、フラグは `orca skills get orchestration --full` を正とする。ここでは何を渡し、何を守るかだけ書く。
 
 Agent を起動するとき、Task spec に次を渡す。
 

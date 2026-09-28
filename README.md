@@ -11,11 +11,14 @@
     │   │   ├── researcher.md
     │   │   └── reviewer.md
     │   ├── rules
-    │   │   └── orchestrator.md  Orchestrator（Orca 上の Claude Code）の方針。oned-coordinate スキルから読む。worker には適用しない
+    │   │   ├── orchestrator.md  Orchestrator（Orca 上の Claude Code）の方針。入口スキルから読む。worker には適用しない
+    │   │   └── references
+    │   │       └── orca-handoff.md  worker の起動・待ち方・後始末の手順（トラッカーに依存しない。全入口スキルが参照）
     │   ├── evals   スキルの評価ワークスペース（配下は省略）
     │   └── skills
     │       ├── README.md
     │       ├── oned-coordinate  ONED の JIRA チケット起点で Coordinator として振る舞い、Orca で各役割を回す入口
+    │       ├── github-coordinate  プライベートリポジトリの GitHub Issue 起点で Coordinator として振る舞う入口
     │       ├── obsidian
     │       └── artifact-copy
     ├── claude Claude 固有設定（常設の全役割はここ）
@@ -44,7 +47,7 @@
 
 ### AI Development Team の動かし方
 
-1. Orca のターミナルで Claude Code を起動し、`oned-coordinate` スキルに ONED の JIRA チケット ID か要求を渡す（例: `DEV-1622 を着手して`）
+1. Orca のターミナルで Claude Code を起動し、入口スキルにチケット ID か要求を渡す。ONED（JIRA）なら `oned-coordinate`（例: `DEV-1622 を着手して`）、プライベートリポジトリ（GitHub Issue）なら `github-coordinate`（例: `#42 を着手して`）
 2. スキルが `~/.agents/rules/orchestrator.md` を読み、`task.md` を Obsidian に作り、Orca orchestration で各役割を worker として順に起こす
 3. 各 worker は Claude Code。Task spec で `~/.claude/agents/{role}.md` のサブエージェントに委譲し、成果物を Obsidian（`Works/{product}/tasks/{task_id}/`）に書く
 
