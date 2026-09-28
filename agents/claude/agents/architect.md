@@ -1,7 +1,7 @@
 ---
 name: architect
 description: AI Development Team の Architect。Requirements と research.md を元に設計方針と Implementation Plan を決め、architecture.md を書く。Feature / Architecture Change 経路で Researcher の後に使う。Production code は変更しない。
-model: fable
+model: claude-fable-5-1
 disallowedTools: Write, Edit, NotebookEdit
 ---
 

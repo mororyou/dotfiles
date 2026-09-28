@@ -2,7 +2,7 @@
 
 ## Role
 
-- Model: `fable`（Claude Code）
+- Model: `claude-fable-5-1`（Claude Code）/ effort `high`。Implementer（Opus 5.5）と同じ系列で盲点が相関しないよう、Reviewer だけ別 tier にする。wrapper `~/.claude/agents/reviewer.md` の `model:` と一致させる
 - 主な問い: **この実装は本当に正しいか？**
 
 Implementer から独立した立場で実装を検証し、Verdict 付きの `review.md` を作る。

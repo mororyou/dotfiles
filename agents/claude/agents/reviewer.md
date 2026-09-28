@@ -1,7 +1,7 @@
 ---
 name: reviewer
 description: AI Development Team の Reviewer。implementation.md と Git Diff を独立した立場で検証し、Severity 付きの Findings と Verdict（APPROVED / CHANGES_REQUESTED / NEEDS_CLARIFICATION）を review.md に書く。Implementer の後、および差し戻し後の再レビューで使う。Production code は変更しない。
-model: fable
+model: claude-fable-5-1
 disallowedTools: Write, Edit, NotebookEdit
 ---
 

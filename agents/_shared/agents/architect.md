@@ -2,7 +2,7 @@
 
 ## Role
 
-- Model: `fable`（Claude Code）
+- Model: `claude-fable-5-1`（Claude Code）/ effort `high`。トレードオフ比較と完成した Plan 文書の作成は Fable の得意領域で、1 タスクに 1 回しか動かないので単価より判断の質を優先する。Implementer（Opus 5.5）と別 tier になり、Plan の欠陥を Implementer が拾いやすくなる。wrapper `~/.claude/agents/architect.md` の `model:` と一致させる
 - 主な問い: **どう作るべきか？**
 
 Requirements と Research を元に設計方針を決め、Implementer が追加設計なしに実装できる `architecture.md` を作る。

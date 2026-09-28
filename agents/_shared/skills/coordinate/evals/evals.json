@@ -1,0 +1,53 @@
+{
+  "skill_name": "coordinate",
+  "notes": "Orca の runtime・obsidian MCP・JIRA MCP が生きている環境で実行する。サンドボックス内の subagent では orca status が runtime_access_denied になるため、実行は Orca ターミナル内の Claude Code で行う。",
+  "evals": [
+    {
+      "id": 0,
+      "eval_name": "jira-bug-ticket-to-bug-route",
+      "prompt": "DEV-1622 を着手して。product は 1D。",
+      "expected_output": "orchestrator.md を読んでから JIRA DEV-1622 を読み、Works/1D/tasks/DEV-1622/task.md を作る。Issue Type が Bug で受け入れ条件が明確なら requirements.md を起こし、経路 Bug を選び、Orca の Run と Researcher の Task を作って worker-start する。Coordinator 自身は Repository を grep しない。",
+      "files": [],
+      "assertions": [
+        "orchestrator.md was read before any JIRA tool call",
+        "task.md exists at Works/1D/tasks/DEV-1622/task.md with Goal, Context (JIRA URL), Status, Workflow, Artifact links, Log",
+        "Route recorded in task.md Workflow is Bug (or heavier with a stated reason)",
+        "requirements.md, if created, has all six sections from orchestrator.md §3",
+        "No Grep/Read/Bash call against repository source files by the coordinator before Researcher worker_done",
+        "orca orchestration run-create was called once and its objective contains DEV-1622",
+        "First worker-start uses --worktree current and --agent claude with --model claude-sonnet-5, and the task spec delegates to the researcher subagent",
+        "Task spec does not instruct the worker to 'report to Orchestrator'; it asks for content in worker_done body"
+      ]
+    },
+    {
+      "id": 1,
+      "eval_name": "vague-story-triggers-grill-me",
+      "prompt": "このチケットをチームで進めて: PROJ-88。中身は「ダッシュボードをもっと使いやすくする」ってだけで受け入れ条件は空。プロダクトは IJU。",
+      "expected_output": "明確さの判定で不足を検出し、Researcher を起動する前に grill-me（Skill ツール grilling）に入る。task.md は Status: Clarifying で先に作られ、grill-me の結果が requirements.md に保存されてから経路（Feature）を選ぶ。",
+      "files": [],
+      "assertions": [
+        "task.md is created with Status Clarifying before grill-me starts",
+        "grill-me / grilling skill is invoked before any orca orchestration worker-start",
+        "requirements.md is written after grill-me and distinguishes ticket-derived content from user-confirmed content",
+        "No worker-start call happens while Status is Clarifying",
+        "Route chosen after clarification is Feature or Architecture Change"
+      ]
+    },
+    {
+      "id": 2,
+      "eval_name": "review-changes-requested-loop",
+      "prompt": "Works/1D/tasks/DEV-1622/ には task.md / research.md / implementation.md / review.md が既にあって、review.md の Round 1 Verdict が CHANGES_REQUESTED（実装の問題、戻し先 Implementer、Finding R1-1 と R1-2）になっている。続きをお願い。",
+      "expected_output": "task.md の Status/Log を読んで再開し、Implementer 向けの新しい Task を作る。Task spec の read: に review.md を含め Round 2 の追記を指示する。Implementer の worker_done 後に Reviewer を再起動し、Round 2 の Findings で R1-x が引き継がれているかを確認する。Coordinator は自分で修正しない。",
+      "files": [],
+      "assertions": [
+        "Existing task.md is read (vault_read) before any new Orca Task is created",
+        "New Implementer task spec includes read: review.md and mentions appending Round 2",
+        "Implementer worker-start uses --agent claude with --model claude-opus-5-5 and delegates to the implementer subagent; coordinator does not edit repository files itself",
+        "After Implementer worker_done, implementation.md is vault_read before Reviewer is started",
+        "Reviewer task spec includes read: implementation.md and review.md",
+        "task.md Log gains entries for both handoffs with Dispatch IDs",
+        "If R1-1 or R1-2 is still open in Round 3, no further worker is started and Status becomes Blocked"
+      ]
+    }
+  ]
+}

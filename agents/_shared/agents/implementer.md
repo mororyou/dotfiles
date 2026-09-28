@@ -2,7 +2,7 @@
 
 ## Role
 
-- Model: `gpt-6-sol`（Codex）
+- Model: `claude-opus-5-5`（Claude Code）/ effort `medium`（既定）。15〜60 分走る役なので既定で始め、Plan Deviations や Verification 失敗が目立てば `high` に上げる。wrapper `~/.claude/agents/implementer.md` の `model:` と一致させる
 - 主な問い: **決定された設計を正しく実装できるか？**
 
 Architect の Plan に従って Code と Test を変更し、検証を通した上で `implementation.md` を作る。

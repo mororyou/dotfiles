@@ -15,16 +15,19 @@ Orchestrator は Cursor 本体が担い、複数の AI Agent に役割分担さ�
 
 ## 1. Team
 
-| Role | Tool | Model | Responsibility | Output |
+| Role | Tool | Model / effort | Responsibility | Output |
 |---|---|---|---|---|
-| 🎛️ Orchestrator | Cursor | — | タスク管理・Agent 選択・Handoff | `task.md` |
-| 🔎 Researcher | Codex | `gpt-6-luna`（ローカル時 Qwen3-Coder-Next） | コードベース調査 | `research.md` |
-| 🧠 Architect | Claude Code | `fable` | 設計・Implementation Plan | `architecture.md` |
-| 🔨 Implementer | Codex | `gpt-6-sol` | 実装・テスト | `implementation.md` |
-| 🔍 Reviewer | Claude Code | `fable` | 独立レビュー | `review.md` |
+| 🎛️ Orchestrator | Claude Code（Orca ターミナル内） | `claude-opus-5-5` / medium | タスク管理・Agent 選択・Handoff | `task.md` |
+| 🔎 Researcher | Claude Code | `claude-sonnet-5` / high | コードベース調査 | `research.md` |
+| 🧠 Architect | Claude Code | `claude-fable-5-1` / high | 設計・Implementation Plan | `architecture.md` |
+| 🔨 Implementer | Claude Code | `claude-opus-5-5` / medium | 実装・テスト | `implementation.md` |
+| 🔍 Reviewer | Claude Code | `claude-fable-5-1` / high | 独立レビュー | `review.md` |
 
-各 Agent の振る舞いは `~/.agents/agents/{role}.md` に定義されている。
+各 Agent の振る舞いは `~/.agents/agents/{role}.md` に定義されている（Model 行が正本。wrapper `~/.claude/agents/{role}.md` の `model:` と一致させる）。
 すべてのタスクで全 Agent を利用する必要はない。
+
+設計と検証（Architect / Reviewer）は Fable、調査と実装（Researcher / Implementer）は Sonnet / Opus。Implementer と Reviewer を別 tier にして盲点の相関を避け、Architect は判断の質を単価より優先する。
+Codex（`~/.codex/agents/`）は常設の役割ではなく、Architecture Change や Critical 後の再レビューで Orchestrator が追加で起こす second opinion。
 
 ---
 
@@ -155,16 +158,10 @@ Agent 間の Shared Memory には Obsidian を利用する。プロダクトご�
 ### Pre-flight（タスク開始前に Orchestrator が 1 回だけ実行）
 
 1. Obsidian が起動しているか: `vault_list Works/{product}/tasks/` が返ること
-2. Codex Agent から書けるか（初回のみ）:
+2. Claude Code に obsidian MCP が登録されているか: `claude mcp list` に `obsidian` があること。無ければ `agents/claude/mcp.json.example` を参照して追加する。Orchestrator も worker も同じ Claude Code を使うので、Orchestrator 自身の `vault_list` が通れば worker からも通る
+3. second opinion で Codex を使う予定があるときだけ: `codex mcp list` に `obsidian` があること（`agents/codex/mcp.example.toml`）
 
-   ```bash
-   codex exec "Have the researcher agent write 'ping' to Works/_preflight/ping.md via obsidian MCP and report the result"
-   ```
-
-   ファイルができなければ下の fallback に切り替える。Implementer（`workspace-write`）も同じ検証を 1 回通す
-3. Codex 側に obsidian MCP が登録されているか: `codex mcp list` に `obsidian` があること。無ければ `agents/codex/mcp.example.toml` を参照して追加する
-
-**fallback（MCP が sandbox で通らなかった場合）**
+**fallback（worker から MCP が通らなかった場合）**
 read-only Agent（Researcher / Reviewer）は Vault に書かず、Output Format 通りの本文を最終メッセージで返し、Orchestrator が `vault_write` する。その場合、該当 Agent の Shared Memory Protocol の「書く」を次に差し替える。
 
 ```markdown
@@ -271,6 +268,8 @@ Memory と Repository が矛盾する場合は Repository を確認する。古�
 ---
 
 ## 7. Agent Handoff
+
+> Orca 上で動かす場合、この節の「起動方法」は `~/.agents/skills/coordinate/references/orca-handoff.md` で置き換える（全役割を `--agent claude` のサブエージェント経由で起動する）。以下の `codex exec` / Cursor サブエージェントの記述は Cursor を Orchestrator にしていたときのもの。
 
 Agent を起動するときは、次を渡す。
 

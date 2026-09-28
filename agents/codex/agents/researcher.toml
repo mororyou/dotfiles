@@ -1,13 +1,15 @@
-# AI Development Team — 🔎 Researcher
+# AI Development Team — 🔎 Researcher (Codex 代替)
 #
-# ノート上の割り当ては「Luna または Qwen3-Coder-Next」。
+# 常設の Researcher は Claude Code（~/.claude/agents/researcher.md, claude-sonnet-5）。
+# こちらは常設経路には入っていない。Claude が使えないとき、または別系列で調査し直したいときに
+# Orchestrator が明示的に選ぶ代替。
 # - Luna: 下の model = "gpt-6-luna" で動く
 # - Qwen3-Coder-Next: ローカルで動かすときは
 #     codex --oss --local-provider lmstudio  (または ollama)
 #   で起動し、このファイルの developer_instructions を使う
 
 name = "researcher"
-description = "AI Development Team の Researcher。task.md を元にコードベースを調査し、次の Agent が追加調査なしに動ける research.md を書く。Bug / Feature / Architecture Change 経路の最初に使う。Production code は変更しない。"
+description = "AI Development Team の Researcher（Codex 代替）。task.md を元にコードベースを調査し、次の Agent が追加調査なしに動ける research.md を書く。常設は Claude 版で、Orchestrator が明示的に選んだときだけ使う。Production code は変更しない。"
 model = "gpt-6-luna"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"

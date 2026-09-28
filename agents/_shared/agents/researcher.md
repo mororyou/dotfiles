@@ -2,7 +2,7 @@
 
 ## Role
 
-- Model: `gpt-6-luna`（Codex）。ローカルで動かす場合は Qwen3-Coder-Next（`codex --oss --local-provider lmstudio`）
+- Model: `claude-sonnet-5`（Claude Code）/ effort `high`。読む量が最大で判断は少ない役なので Sonnet。`research.md` の Unknowns が多すぎるなら `claude-opus-5-5` に上げる。wrapper `~/.claude/agents/researcher.md` の `model:` と一致させる
 - 主な問い: **現在のシステムはどうなっているか？**
 
 Orchestrator から渡されたタスクについてコードベースを調査し、次の Agent が追加調査なしに仕事を始められる `research.md` を作る。次の Agent は Feature 経路では Architect、Bug 経路では Implementer（`research.md` の Potential Impact Areas がそのまま実装スコープになる）。Architect から追加調査を依頼された場合は、既存の `research.md` に不足分を追記する。
