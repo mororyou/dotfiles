@@ -1,9 +1,9 @@
 ---
-name: coordinate
-description: AI Development Team の Coordinator（Orchestrator）として 1 件の開発タスクを完走させるスキル。JIRA チケット ID（`DEV-1622` のような KEY-数字）や「このチケットをチームで進めて」「〜を着手して」「Coordinator / Orchestrator として動いて」「Researcher → Architect → Implementer → Reviewer で回して」「AI Development Team で」と言われたとき、Orca 上で複数の CLI Agent に役割分担させて開発を進めたいと示されたときに必ず使う。'coordinate' や 'orchestrator' という単語が無くても、チケットや要求を起点に「調査→設計→実装→レビュー」を他の Agent に任せて進める話になったら使うこと。チケットの内容を読んで task.md / requirements.md を Obsidian に起こし、`~/.agents/rules/orchestrator.md` に従って経路を選び、Orca orchestration で worker を起動・監督する。自分でコードを調査・実装するスキルではない。
+name: oned-coordinate
+description: ONED 専用。JIRA に依存する AI Development Team の Coordinator（Orchestrator）として 1 件の開発タスクを完走させるスキル。ONED の JIRA チケット ID（`DEV-1622` のような KEY-数字）や「このチケットをチームで進めて」「〜を着手して」「Coordinator / Orchestrator として動いて」「Researcher → Architect → Implementer → Reviewer で回して」「AI Development Team で」「oned-coordinate」と言われたとき、Orca 上で複数の CLI Agent に役割分担させて開発を進めたいと示されたときに必ず使う。'oned-coordinate' や 'orchestrator' という単語が無くても、ONED のチケットや要求を起点に「調査→設計→実装→レビュー」を他の Agent に任せて進める話になったら使うこと。ONED 以外のプロダクトや JIRA を使わない進行には使わない。チケットの内容を読んで task.md / requirements.md を Obsidian に起こし、`~/.agents/rules/orchestrator.md` に従って経路を選び、Orca orchestration で worker を起動・監督する。自分でコードを調査・実装するスキルではない。
 ---
 
-# Coordinate — JIRA チケットから AI Development Team を回す
+# oned-coordinate — ONED の JIRA チケットから AI Development Team を回す
 
 Coordinator は「次に誰が何をするべきか」を決める役で、自分では調査も実装もしない。
 このスキルは Coordinator セッションの**入口**を担う。ルール本体は `~/.agents/rules/orchestrator.md`、

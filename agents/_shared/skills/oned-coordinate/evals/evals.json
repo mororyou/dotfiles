@@ -1,5 +1,5 @@
 {
-  "skill_name": "coordinate",
+  "skill_name": "oned-coordinate",
   "notes": "Orca の runtime・obsidian MCP・JIRA MCP が生きている環境で実行する。サンドボックス内の subagent では orca status が runtime_access_denied になるため、実行は Orca ターミナル内の Claude Code で行う。",
   "evals": [
     {
